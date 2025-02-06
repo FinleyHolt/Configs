@@ -1,0 +1,17 @@
+export PATH="$HOME/.local/bin:$PATH"
+
+# Path to your Oh My Zsh installation
+export ZSH="$HOME/.oh-my-zsh"
+
+# Set Zsh theme to Catppuccin (mocha variant)
+ZSH_THEME="catppuccin"
+CATPPUCCIN_FLAVOR="mocha"
+CATPPUCCIN_SHOW_TIME=true
+
+# List of plugins to load
+plugins=(git)
+
+# Custom aliases
+#alias ls='colorls'
+
+export PATH="/usr/lib/ruby/gems/3.3.0/bin:$PATH"
