@@ -27,6 +27,15 @@ Install dependencies and create symlinks:
 configs-cli setup --system [ubuntu|arch|macos|windows]
 ```
 
+Note: The `setup` command is required. For example:
+```bash
+# Correct usage:
+configs-cli setup --system arch --repo ~/my-configs
+
+# Incorrect usage:
+configs-cli --system arch  # Wrong! Missing 'setup' command
+```
+
 Options:
 - `--system`: (Required) Specify your operating system
 - `--repo`: Path to your configs repository (default: ~/.configs)
