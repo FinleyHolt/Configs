@@ -6,11 +6,7 @@ setup(
     description="A CLI tool to install dependencies and set up your dotfiles",
     author="Your Name",
     packages=find_packages(),
-    entry_points={
-        "console_scripts": [
-            "configs-cli=configs_cli.main:main",
-        ],
-    },
+    scripts=['configs_cli/bin/configs-cli'],
     python_requires=">=3.6",
 )
 
