@@ -297,12 +297,23 @@ def create_symlinks(repo_dir):
 
 def set_default_shell(shell):
     if os.name != 'nt':
-        current_shell = os.environ.get("SHELL", "")
-        if shell not in current_shell:
-            print_step(f"Changing default shell to {shell}")
-            subprocess.check_call(["chsh", "-s", shell])
-        else:
-            print(f"Default shell is already {shell}.")
+        # Get the current shell from /etc/passwd instead of environment
+        try:
+            import pwd
+            current_shell = pwd.getpwuid(os.getuid()).pw_shell
+            if shell == current_shell:
+                print(f"Default shell is already {shell}")
+            else:
+                print_step(f"Changing default shell to {shell}")
+                subprocess.check_call(["chsh", "-s", shell])
+        except ImportError:
+            print("Could not import pwd module, falling back to environment check")
+            current_shell = os.environ.get("SHELL", "")
+            if shell not in current_shell:
+                print_step(f"Changing default shell to {shell}")
+                subprocess.check_call(["chsh", "-s", shell])
+            else:
+                print(f"Default shell is already {shell}")
     else:
         print("Skipping default shell change on Windows.")
 
