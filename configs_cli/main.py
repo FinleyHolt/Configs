@@ -199,7 +199,7 @@ def create_symlinks(repo_dir):
         sys.exit(1)
     
     # Create symlink for .zshrc.
-    zshrc_src = os.path.join(dotfiles_dir, "zshrc")
+    zshrc_src = os.path.abspath(os.path.join(dotfiles_dir, "zshrc"))
     zshrc_dest = os.path.join(home, ".zshrc")
     if os.path.exists(zshrc_dest) or os.path.islink(zshrc_dest):
         os.remove(zshrc_dest)
@@ -211,7 +211,7 @@ def create_symlinks(repo_dir):
     ensure_ruby_gem_bin_in_zshrc(zshrc_src)
     
     # Create symlink for .tmux.conf.
-    tmux_src = os.path.join(dotfiles_dir, "tmux.conf")
+    tmux_src = os.path.abspath(os.path.join(dotfiles_dir, "tmux.conf"))
     tmux_dest = os.path.join(home, ".tmux.conf")
     if os.path.exists(tmux_dest) or os.path.islink(tmux_dest):
         os.remove(tmux_dest)
@@ -219,7 +219,7 @@ def create_symlinks(repo_dir):
     print(f"Created symlink: {tmux_dest} -> {tmux_src}")
 
     # Create symlink for Neovim config (placed in ~/.config/nvim).
-    nvim_src = os.path.join(config_dir, "nvim")
+    nvim_src = os.path.abspath(os.path.join(config_dir, "nvim"))
     nvim_dest = os.path.join(home, ".config", "nvim")
     os.makedirs(os.path.join(home, ".config"), exist_ok=True)
     if os.path.exists(nvim_dest) or os.path.islink(nvim_dest):
@@ -231,7 +231,7 @@ def create_symlinks(repo_dir):
     print(f"Created symlink: {nvim_dest} -> {nvim_src}")
 
     # Create symlink for i3 config (placed in ~/.config/i3).
-    i3_src = os.path.join(config_dir, "i3")
+    i3_src = os.path.abspath(os.path.join(config_dir, "i3"))
     i3_dest = os.path.join(home, ".config", "i3")
     if os.path.exists(i3_dest) or os.path.islink(i3_dest):
         if os.path.islink(i3_dest):
