@@ -39,8 +39,16 @@ def install_oh_my_zsh_theme():
 def install_oh_my_zsh():
     """Install Oh My Zsh if not already installed"""
     oh_my_zsh_dir = os.path.expanduser("~/.oh-my-zsh")
+    zshrc_backup = os.path.expanduser("~/.zshrc.pre-oh-my-zsh")
+    
     if not os.path.exists(oh_my_zsh_dir):
         print_step("Installing Oh My Zsh")
+        
+        # Backup existing .zshrc if it exists
+        zshrc_path = os.path.expanduser("~/.zshrc")
+        if os.path.exists(zshrc_path):
+            print(f"Backing up existing .zshrc to {zshrc_backup}")
+            shutil.copy2(zshrc_path, zshrc_backup)
         # First verify zsh version
         try:
             zsh_version = subprocess.check_output(["zsh", "--version"]).decode()
@@ -76,7 +84,17 @@ def install_oh_my_zsh():
             # Remove the default .zshrc created by oh-my-zsh installation
             zshrc_path = os.path.expanduser("~/.zshrc")
             if os.path.exists(zshrc_path):
-                os.remove(zshrc_path)
+                # Compare with backup to see if it's the default oh-my-zsh config
+                if os.path.exists(zshrc_backup):
+                    with open(zshrc_path, 'r') as f1, open(zshrc_backup, 'r') as f2:
+                        if f1.read() != f2.read():
+                            print("Oh My Zsh created a new config, removing it")
+                            os.remove(zshrc_path)
+                        else:
+                            print("Restoring original .zshrc")
+                            shutil.copy2(zshrc_backup, zshrc_path)
+                else:
+                    os.remove(zshrc_path)
                 
             # Clean up the installer
             os.remove(install_script)
@@ -87,9 +105,34 @@ def install_oh_my_zsh():
         print("Oh My Zsh is already installed")
         install_oh_my_zsh_theme()
 
+def check_dependency(pkg):
+    """Check if a package is installed"""
+    if shutil.which(pkg):
+        return True
+    
+    # Additional check for system packages
+    if os.name != 'nt':  # Not Windows
+        try:
+            if subprocess.run(["which", pkg], 
+                            stdout=subprocess.PIPE, 
+                            stderr=subprocess.PIPE).returncode == 0:
+                return True
+        except:
+            pass
+    return False
+
 def install_dependencies(system):
     dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget"]
     system = system.lower()
+    
+    # Filter out already installed dependencies
+    to_install = [dep for dep in dependencies if not check_dependency(dep)]
+    
+    if not to_install:
+        print("All core dependencies are already installed")
+        return
+        
+    print(f"Installing missing dependencies: {', '.join(to_install)}")
     if system in ["ubuntu", "debian"]:
         print_step("Installing dependencies on Ubuntu/Debian")
         subprocess.check_call(["sudo", "apt-get", "update"])
