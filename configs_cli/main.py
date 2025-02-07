@@ -284,7 +284,39 @@ def main():
     # Subcommand: source.
     subparsers.add_parser("source", help="Output commands to source your configuration")
     
+    # Subcommand: help.
+    help_parser = subparsers.add_parser("help", help="Show detailed help information")
+    
     args = parser.parse_args()
+
+    if args.command == "help":
+        print("""
+Configs CLI - Configuration Management Tool
+
+Commands:
+  setup   Install dependencies and create symlinks
+    --system    Required. Choose: ubuntu, arch, macos, windows
+    --repo      Path to configs repository (default: ~/.configs)
+    --repo-url  Git URL to clone if repo doesn't exist
+    
+  source  Show commands to source your configuration
+    
+  help    Show this help message
+
+Environment Variables:
+  CONFIGS_REPO  Set default repository path
+
+Examples:
+  # Setup on Arch Linux
+  configs-cli setup --system arch
+  
+  # Setup with custom repository
+  configs-cli setup --system ubuntu --repo ~/my-configs
+  
+  # Show source commands
+  configs-cli source
+""")
+        return
 
     if args.command == "setup":
         # If the repository doesn't exist, attempt to clone it if --repo-url is provided.
