@@ -9,7 +9,7 @@ def install_oh_my_zsh():
     """Install Oh My Zsh if not already installed"""
     oh_my_zsh_dir = os.path.expanduser("~/.oh-my-zsh")
     if not os.path.exists(oh_my_zsh_dir):
-        print("Installing Oh My Zsh...")
+        print_step("Installing Oh My Zsh")
         # First verify zsh version
         try:
             zsh_version = subprocess.check_output(["zsh", "--version"]).decode()
@@ -23,7 +23,7 @@ def install_oh_my_zsh():
         alternative_url = "https://install.ohmyz.sh"
         
         try:
-            print("Downloading Oh My Zsh installer...")
+            print_step("Downloading Oh My Zsh installer")
             subprocess.run(["wget", "-O", install_script, alternative_url], check=True)
         except subprocess.CalledProcessError:
             print("Failed to download from primary URL, trying backup...")
@@ -36,7 +36,7 @@ def install_oh_my_zsh():
         
         # Run the installer
         try:
-            print("Running Oh My Zsh installer...")
+            print_step("Running Oh My Zsh installer")
             subprocess.run([install_script, "--unattended"], check=True)
             
             # Remove the default .zshrc created by oh-my-zsh installation
@@ -56,24 +56,24 @@ def install_dependencies(system):
     dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget"]
     system = system.lower()
     if system in ["ubuntu", "debian"]:
-        print("Installing dependencies on Ubuntu/Debian...")
+        print_step("Installing dependencies on Ubuntu/Debian")
         subprocess.check_call(["sudo", "apt-get", "update"])
         subprocess.check_call(["sudo", "apt-get", "install", "-y"] + dependencies)
     elif system in ["arch", "archlinux"]:
-        print("Installing dependencies on Arch Linux...")
+        print_step("Installing dependencies on Arch Linux")
         # For Arch, add Ruby and required dependencies for colorls
         arch_dependencies = dependencies + ["ruby", "ruby-rake", "gcc"]
         subprocess.check_call(["sudo", "pacman", "-Syu", "--noconfirm"] + arch_dependencies)
         
         # Now install the colorls gem with proper permissions
-        print("Installing colorls gem...")
+        print_step("Installing colorls gem")
         subprocess.check_call(["gem", "install", "colorls", "--user-install"])
     elif system in ["macos", "mac"]:
-        print("Installing dependencies on macOS using Homebrew...")
+        print_step("Installing dependencies on macOS using Homebrew")
         subprocess.check_call(["brew", "update"])
         subprocess.check_call(["brew", "install"] + dependencies)
     elif system in ["windows"]:
-        print("Installing dependencies on Windows...")
+        print_step("Installing dependencies on Windows")
         for pkg in dependencies:
             subprocess.check_call(["choco", "install", pkg, "-y"])
     else:
@@ -188,7 +188,7 @@ def set_default_shell(shell):
     if os.name != 'nt':
         current_shell = os.environ.get("SHELL", "")
         if shell not in current_shell:
-            print(f"Changing default shell to {shell}...")
+            print_step(f"Changing default shell to {shell}")
             subprocess.check_call(["chsh", "-s", shell])
         else:
             print(f"Default shell is already {shell}.")
@@ -200,7 +200,14 @@ def print_source_commands():
     print(f"source {os.path.join(home, '.zshrc')}")
     print("Also, if new executables are not found, try running 'rehash' in your shell.")
 
+def print_step(message):
+    """Print a formatted step message"""
+    print("\n" + "="*80)
+    print(f">>> {message}")
+    print("="*80 + "\n")
+
 def main():
+    print_step("Starting configs-cli setup tool")
     parser = argparse.ArgumentParser(
         description="Setup Configs and Dependencies CLI Tool"
     )
@@ -226,7 +233,7 @@ def main():
         # If the repository doesn't exist, attempt to clone it if --repo-url is provided.
         if not os.path.isdir(args.repo):
             if args.repo_url:
-                print(f"Repository {args.repo} not found. Cloning from {args.repo_url}...")
+                print_step(f"Cloning repository from {args.repo_url}")
                 subprocess.check_call(["git", "clone", args.repo_url, args.repo])
             else:
                 print(f"Error: repository directory {args.repo} does not exist. "
