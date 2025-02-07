@@ -10,17 +10,50 @@ def install_oh_my_zsh():
     oh_my_zsh_dir = os.path.expanduser("~/.oh-my-zsh")
     if not os.path.exists(oh_my_zsh_dir):
         print("Installing Oh My Zsh...")
-        install_script = "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
-        subprocess.run(["sh", "-c", f"curl -fsSL {install_script} | sh"], check=True)
-        # Remove the default .zshrc created by oh-my-zsh installation
-        zshrc_path = os.path.expanduser("~/.zshrc")
-        if os.path.exists(zshrc_path):
-            os.remove(zshrc_path)
+        # First verify zsh version
+        try:
+            zsh_version = subprocess.check_output(["zsh", "--version"]).decode()
+            print(f"Found ZSH: {zsh_version.strip()}")
+        except subprocess.CalledProcessError:
+            print("Error: ZSH is not properly installed")
+            sys.exit(1)
+
+        # Download the install script first for inspection
+        install_script = "/tmp/install_ohmyzsh.sh"
+        alternative_url = "https://install.ohmyz.sh"
+        
+        try:
+            print("Downloading Oh My Zsh installer...")
+            subprocess.run(["wget", "-O", install_script, alternative_url], check=True)
+        except subprocess.CalledProcessError:
+            print("Failed to download from primary URL, trying backup...")
+            subprocess.run(["wget", "-O", install_script, 
+                          "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"], 
+                          check=True)
+
+        # Make the script executable
+        os.chmod(install_script, 0o755)
+        
+        # Run the installer
+        try:
+            print("Running Oh My Zsh installer...")
+            subprocess.run([install_script, "--unattended"], check=True)
+            
+            # Remove the default .zshrc created by oh-my-zsh installation
+            zshrc_path = os.path.expanduser("~/.zshrc")
+            if os.path.exists(zshrc_path):
+                os.remove(zshrc_path)
+                
+            # Clean up the installer
+            os.remove(install_script)
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing Oh My Zsh: {e}")
+            sys.exit(1)
     else:
         print("Oh My Zsh is already installed")
 
 def install_dependencies(system):
-    dependencies = ["zsh", "tmux", "neovim", "i3", "curl"]
+    dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget"]
     system = system.lower()
     if system in ["ubuntu", "debian"]:
         print("Installing dependencies on Ubuntu/Debian...")
