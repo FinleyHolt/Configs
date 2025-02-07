@@ -24,12 +24,15 @@ def install_oh_my_zsh():
         
         try:
             print_step("Downloading Oh My Zsh installer")
+            print("Downloading from:", alternative_url)
             subprocess.run(["wget", "-O", install_script, alternative_url], check=True)
+            print("Download completed successfully")
         except subprocess.CalledProcessError:
-            print("Failed to download from primary URL, trying backup...")
-            subprocess.run(["wget", "-O", install_script, 
-                          "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"], 
-                          check=True)
+            backup_url = "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+            print("Failed to download from primary URL")
+            print("Trying backup URL:", backup_url)
+            subprocess.run(["wget", "-O", install_script, backup_url], check=True)
+            print("Download completed successfully from backup URL")
 
         # Make the script executable
         os.chmod(install_script, 0o755)
