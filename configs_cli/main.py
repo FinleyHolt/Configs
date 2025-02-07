@@ -6,12 +6,14 @@ import sys
 import shutil
 
 def install_oh_my_zsh_theme():
-    """Install the Catppuccin theme for Oh My Zsh"""
+    """Install the Catppuccin theme and zsh plugins"""
     # Create directories
     themes_dir = os.path.expanduser("~/.oh-my-zsh/custom/themes")
     zsh_dir = os.path.expanduser("~/.zsh")
+    plugins_dir = os.path.expanduser("~/.oh-my-zsh/custom/plugins")
     os.makedirs(themes_dir, exist_ok=True)
     os.makedirs(zsh_dir, exist_ok=True)
+    os.makedirs(plugins_dir, exist_ok=True)
     
     # Clone Catppuccin theme repository
     catppuccin_dir = os.path.expanduser("~/.zsh/catppuccin-zsh-syntax-highlighting")
@@ -25,6 +27,14 @@ def install_oh_my_zsh_theme():
         subprocess.run(["cp", 
                        f"{catppuccin_dir}/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh",
                        f"{zsh_dir}/"], check=True)
+
+    # Install zsh-autosuggestions
+    autosuggestions_dir = os.path.expanduser("~/.oh-my-zsh/custom/plugins/zsh-autosuggestions")
+    if not os.path.exists(autosuggestions_dir):
+        print_step("Installing zsh-autosuggestions plugin")
+        subprocess.run(["git", "clone",
+                       "https://github.com/zsh-users/zsh-autosuggestions.git",
+                       autosuggestions_dir], check=True)
 
 def install_oh_my_zsh():
     """Install Oh My Zsh if not already installed"""
