@@ -5,8 +5,22 @@ import os
 import sys
 import shutil
 
+def install_oh_my_zsh():
+    """Install Oh My Zsh if not already installed"""
+    oh_my_zsh_dir = os.path.expanduser("~/.oh-my-zsh")
+    if not os.path.exists(oh_my_zsh_dir):
+        print("Installing Oh My Zsh...")
+        install_script = "https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+        subprocess.run(["sh", "-c", f"curl -fsSL {install_script} | sh"], check=True)
+        # Remove the default .zshrc created by oh-my-zsh installation
+        zshrc_path = os.path.expanduser("~/.zshrc")
+        if os.path.exists(zshrc_path):
+            os.remove(zshrc_path)
+    else:
+        print("Oh My Zsh is already installed")
+
 def install_dependencies(system):
-    dependencies = ["zsh", "tmux", "neovim", "i3"]
+    dependencies = ["zsh", "tmux", "neovim", "i3", "curl"]
     system = system.lower()
     if system in ["ubuntu", "debian"]:
         print("Installing dependencies on Ubuntu/Debian...")
@@ -186,6 +200,8 @@ def main():
                       f"Either clone it there or provide --repo-url to auto-clone it.")
                 sys.exit(1)
         install_dependencies(args.system)
+        if args.system != "windows":
+            install_oh_my_zsh()
         create_symlinks(args.repo)
         if args.system != "windows":
             zsh_path = shutil.which("zsh")
