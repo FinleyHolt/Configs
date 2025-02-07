@@ -307,7 +307,7 @@ Environment Variables:
   CONFIGS_REPO  Set default repository path
 
 Examples:
-  # Setup on Arch Linux
+  # Setup on Arch Linux (correct usage)
   configs-cli setup --system arch
   
   # Setup with custom repository
@@ -315,6 +315,10 @@ Examples:
   
   # Show source commands
   configs-cli source
+
+Common Mistakes:
+  ❌ configs-cli --system arch        # Wrong! Missing 'setup' command
+  ✅ configs-cli setup --system arch  # Correct!
 """)
         return
 
