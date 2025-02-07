@@ -101,7 +101,7 @@ def install_dependencies(system):
                 to_install.append(pkg)
         
         # Add zsh plugins to the installation
-        for plugin in ["zsh-syntax-highlighting", "zsh-autocomplete"]:
+        for plugin in ["zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions"]:
             if subprocess.run(["pacman", "-Qq", plugin], 
                             capture_output=True).returncode != 0:
                 to_install.append(plugin)

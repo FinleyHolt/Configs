@@ -11,8 +11,15 @@ ZSH_THEME="robbyrussell"
 plugins=(git)
 
 # -----------------------------------------------------------------------------
-# ZSH Autocomplete Configuration
+# ZSH Autosuggestions & Autocomplete Configuration
 # -----------------------------------------------------------------------------
+# Load zsh-autosuggestions
+if [ -f "/usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+    source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+else
+    echo "Warning: zsh-autosuggestions not found!"
+fi
+
 # Load zsh-autocomplete
 if [ -f "/usr/share/zsh/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]; then
     source /usr/share/zsh/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh
@@ -20,10 +27,15 @@ else
     echo "Warning: zsh-autocomplete not found!"
 fi
 
-# Autocomplete settings
+# Autocomplete and autosuggestion settings
 zstyle ':autocomplete:*' min-input 1  # Characters before autocompletion starts
 zstyle ':autocomplete:*' insert-unambiguous yes  # Insert common substring on first tab
 zstyle ':autocomplete:*' widget-style menu-select  # Use menu selection interface
+
+# Autosuggestions configuration
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
 
 # -----------------------------------------------------------------------------
 # Custom Plugin and Theme Sources
