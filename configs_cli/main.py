@@ -5,6 +5,21 @@ import os
 import sys
 import shutil
 
+def install_oh_my_zsh_theme():
+    """Install the Catppuccin theme for Oh My Zsh"""
+    themes_dir = os.path.expanduser("~/.oh-my-zsh/custom/themes")
+    theme_file = os.path.join(themes_dir, "catppuccin.zsh-theme")
+    
+    if not os.path.exists(theme_file):
+        print_step("Installing Catppuccin theme for Oh My Zsh")
+        theme_url = "https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin.zsh-theme"
+        os.makedirs(themes_dir, exist_ok=True)
+        try:
+            subprocess.run(["wget", "-O", theme_file, theme_url], check=True)
+            print("Catppuccin theme installed successfully")
+        except subprocess.CalledProcessError as e:
+            print(f"Warning: Failed to install Catppuccin theme: {e}")
+
 def install_oh_my_zsh():
     """Install Oh My Zsh if not already installed"""
     oh_my_zsh_dir = os.path.expanduser("~/.oh-my-zsh")
@@ -54,6 +69,7 @@ def install_oh_my_zsh():
             sys.exit(1)
     else:
         print("Oh My Zsh is already installed")
+        install_oh_my_zsh_theme()
 
 def install_dependencies(system):
     dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget"]
@@ -66,7 +82,23 @@ def install_dependencies(system):
         print_step("Installing dependencies on Arch Linux")
         # For Arch, add Ruby and required dependencies for colorls
         arch_dependencies = dependencies + ["ruby", "ruby-rake", "gcc"]
-        subprocess.check_call(["sudo", "pacman", "-Syu", "--noconfirm"] + arch_dependencies)
+        # Explicitly install i3-wm and i3status to avoid group selection prompt
+        i3_deps = ["i3-wm", "i3status", "i3blocks", "i3lock"]
+        all_deps = arch_dependencies + i3_deps
+        # Remove i3 from the list since we're installing specific i3 packages
+        all_deps.remove("i3")
+        # Only install packages that aren't already installed
+        to_install = []
+        for pkg in all_deps:
+            result = subprocess.run(["pacman", "-Qq", pkg], capture_output=True)
+            if result.returncode != 0:
+                to_install.append(pkg)
+        
+        if to_install:
+            print(f"Installing packages: {', '.join(to_install)}")
+            subprocess.check_call(["sudo", "pacman", "-S", "--noconfirm"] + to_install)
+        else:
+            print("All required packages are already installed")
         
         # Now install the colorls gem with proper permissions
         print_step("Installing colorls gem")
