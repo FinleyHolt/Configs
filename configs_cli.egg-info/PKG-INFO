@@ -3,7 +3,19 @@ Name: configs_cli
 Version: 0.1.0
 Summary: A CLI tool to install dependencies and set up your dotfiles
 Author: Your Name
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: System :: Installation/Setup
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
 Requires-Python: >=3.6
+Requires-Dist: argparse
 Dynamic: author
+Dynamic: classifier
+Dynamic: requires-dist
 Dynamic: requires-python
 Dynamic: summary

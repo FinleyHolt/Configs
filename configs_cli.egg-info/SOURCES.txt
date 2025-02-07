@@ -1,3 +1,4 @@
+README.md
 pyproject.toml
 setup.py
 configs_cli/__init__.py
@@ -5,5 +6,6 @@ configs_cli/main.py
 configs_cli.egg-info/PKG-INFO
 configs_cli.egg-info/SOURCES.txt
 configs_cli.egg-info/dependency_links.txt
-configs_cli.egg-info/entry_points.txt
+configs_cli.egg-info/requires.txt
 configs_cli.egg-info/top_level.txt
+configs_cli/bin/configs-cli
