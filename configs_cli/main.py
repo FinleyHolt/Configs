@@ -14,13 +14,13 @@ def install_dependencies(system):
         subprocess.check_call(["sudo", "apt-get", "install", "-y"] + dependencies)
     elif system in ["arch", "archlinux"]:
         print("Installing dependencies on Arch Linux...")
-        # For Arch, add Ruby so that we can install the colorls gem.
-        arch_dependencies = dependencies + ["ruby"]
+        # For Arch, add Ruby and required dependencies for colorls
+        arch_dependencies = dependencies + ["ruby", "ruby-rake", "gcc"]
         subprocess.check_call(["sudo", "pacman", "-Syu", "--noconfirm"] + arch_dependencies)
         
-        # Now install the colorls gem.
+        # Now install the colorls gem with proper permissions
         print("Installing colorls gem...")
-        subprocess.check_call(["gem", "install", "colorls"])
+        subprocess.check_call(["gem", "install", "colorls", "--user-install"])
     elif system in ["macos", "mac"]:
         print("Installing dependencies on macOS using Homebrew...")
         subprocess.check_call(["brew", "update"])
