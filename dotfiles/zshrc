@@ -13,7 +13,7 @@ plugins=(git)
 source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
 
 # Enable syntax highlighting (must be at the end)
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Custom aliases
 alias ls='colorls'
