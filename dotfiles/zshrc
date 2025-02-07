@@ -36,3 +36,5 @@ else
 fi
 
 conda activate Finley
+
+export PATH="/usr/lib/ruby/gems/3.3.0/bin:$PATH"
