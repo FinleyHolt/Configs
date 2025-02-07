@@ -7,18 +7,24 @@ import shutil
 
 def install_oh_my_zsh_theme():
     """Install the Catppuccin theme for Oh My Zsh"""
+    # Create directories
     themes_dir = os.path.expanduser("~/.oh-my-zsh/custom/themes")
-    theme_file = os.path.join(themes_dir, "catppuccin.zsh-theme")
+    zsh_dir = os.path.expanduser("~/.zsh")
+    os.makedirs(themes_dir, exist_ok=True)
+    os.makedirs(zsh_dir, exist_ok=True)
     
-    if not os.path.exists(theme_file):
-        print_step("Installing Catppuccin theme for Oh My Zsh")
-        theme_url = "https://raw.githubusercontent.com/catppuccin/zsh-syntax-highlighting/main/themes/catppuccin.zsh-theme"
-        os.makedirs(themes_dir, exist_ok=True)
-        try:
-            subprocess.run(["wget", "-O", theme_file, theme_url], check=True)
-            print("Catppuccin theme installed successfully")
-        except subprocess.CalledProcessError as e:
-            print(f"Warning: Failed to install Catppuccin theme: {e}")
+    # Clone Catppuccin theme repository
+    catppuccin_dir = os.path.expanduser("~/.zsh/catppuccin-zsh-syntax-highlighting")
+    if not os.path.exists(catppuccin_dir):
+        print_step("Installing Catppuccin syntax highlighting theme")
+        subprocess.run(["git", "clone", 
+                       "https://github.com/catppuccin/zsh-syntax-highlighting.git",
+                       catppuccin_dir], check=True)
+        
+        # Copy the mocha theme file
+        subprocess.run(["cp", 
+                       f"{catppuccin_dir}/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh",
+                       f"{zsh_dir}/"], check=True)
 
 def install_oh_my_zsh():
     """Install Oh My Zsh if not already installed"""
@@ -93,6 +99,11 @@ def install_dependencies(system):
             result = subprocess.run(["pacman", "-Qq", pkg], capture_output=True)
             if result.returncode != 0:
                 to_install.append(pkg)
+        
+        # Add zsh-syntax-highlighting to the installation
+        if subprocess.run(["pacman", "-Qq", "zsh-syntax-highlighting"], 
+                        capture_output=True).returncode != 0:
+            to_install.append("zsh-syntax-highlighting")
         
         if to_install:
             print(f"Installing packages: {', '.join(to_install)}")
