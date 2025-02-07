@@ -122,7 +122,7 @@ def check_dependency(pkg):
     return False
 
 def install_dependencies(system):
-    dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget"]
+    dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom"]
     system = system.lower()
     
     # Filter out already installed dependencies
@@ -283,6 +283,17 @@ def create_symlinks(repo_dir):
             shutil.rmtree(i3_dest)
     os.symlink(i3_src, i3_dest)
     print(f"Created symlink: {i3_dest} -> {i3_src}")
+
+    # Create symlink for picom config (placed in ~/.config/picom).
+    picom_src = os.path.abspath(os.path.join(config_dir, "picom"))
+    picom_dest = os.path.join(home, ".config", "picom")
+    if os.path.exists(picom_dest) or os.path.islink(picom_dest):
+        if os.path.islink(picom_dest):
+            os.remove(picom_dest)
+        else:
+            shutil.rmtree(picom_dest)
+    os.symlink(picom_src, picom_dest)
+    print(f"Created symlink: {picom_dest} -> {picom_src}")
 
 def set_default_shell(shell):
     if os.name != 'nt':
