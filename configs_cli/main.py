@@ -100,10 +100,11 @@ def install_dependencies(system):
             if result.returncode != 0:
                 to_install.append(pkg)
         
-        # Add zsh-syntax-highlighting to the installation
-        if subprocess.run(["pacman", "-Qq", "zsh-syntax-highlighting"], 
-                        capture_output=True).returncode != 0:
-            to_install.append("zsh-syntax-highlighting")
+        # Add zsh plugins to the installation
+        for plugin in ["zsh-syntax-highlighting", "zsh-autocomplete"]:
+            if subprocess.run(["pacman", "-Qq", plugin], 
+                            capture_output=True).returncode != 0:
+                to_install.append(plugin)
         
         if to_install:
             print(f"Installing packages: {', '.join(to_install)}")

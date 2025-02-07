@@ -11,6 +11,21 @@ ZSH_THEME="robbyrussell"
 plugins=(git)
 
 # -----------------------------------------------------------------------------
+# ZSH Autocomplete Configuration
+# -----------------------------------------------------------------------------
+# Load zsh-autocomplete
+if [ -f "/usr/share/zsh/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]; then
+    source /usr/share/zsh/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+else
+    echo "Warning: zsh-autocomplete not found!"
+fi
+
+# Autocomplete settings
+zstyle ':autocomplete:*' min-input 1  # Characters before autocompletion starts
+zstyle ':autocomplete:*' insert-unambiguous yes  # Insert common substring on first tab
+zstyle ':autocomplete:*' widget-style menu-select  # Use menu selection interface
+
+# -----------------------------------------------------------------------------
 # Custom Plugin and Theme Sources
 # -----------------------------------------------------------------------------
 # Source Catppuccin syntax highlighting theme (adjust the path if necessary)
