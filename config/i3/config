@@ -160,5 +160,8 @@ bar {
 # --------------------------------------------------------------------
 # Startup: Launch apps on specific workspaces.
 # --------------------------------------------------------------------
+# Start kitty terminal in workspace 1
+exec --no-startup-id i3-msg 'workspace 1; exec kitty'
+
 # Run the custom startup script to set up the default layout.
 exec --no-startup-id ~/.config/i3/i3-setup.sh
