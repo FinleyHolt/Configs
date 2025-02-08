@@ -1,11 +1,4 @@
 # -----------------------------------------------------------------------------
-# Tmux Auto-Start
-# -----------------------------------------------------------------------------
-if [ -z "$TMUX" ]; then
-    tmux new-session -A -s main
-fi
-
-# -----------------------------------------------------------------------------
 # Basic PATH Setup
 # -----------------------------------------------------------------------------
 export PATH="$HOME/.local/bin:$PATH"
@@ -13,13 +6,9 @@ export PATH="$HOME/.local/bin:$PATH"
 # Set kitty as default terminal
 export TERMINAL="kitty"
 
-# Kitty shell integration
-if test -n "$KITTY_INSTALLATION_DIR"; then
-    export KITTY_SHELL_INTEGRATION="enabled"
-    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
-    kitty-integration
-    unfunction kitty-integration
-fi
+# -----------------------------------------------------------------------------
+# (Tmux Auto-Start block removed)
+# -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Oh My Zsh Settings
@@ -83,16 +72,11 @@ alias lt='colorls --tree'
 # -----------------------------------------------------------------------------
 # Ruby Gems Bin Directory
 # -----------------------------------------------------------------------------
-# Check for Ruby gems in common locations and add to PATH
 if [ -d "$HOME/.local/share/gem/ruby/3.3.0/bin" ]; then
     export PATH="$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH"
 elif [ -d "/usr/lib/ruby/gems/3.3.0/bin" ]; then
     export PATH="/usr/lib/ruby/gems/3.3.0/bin:$PATH"
 fi
-
-# -----------------------------------------------------------------------------
-# Terminal Settings
-# -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Load Secrets (API Keys, etc.)
@@ -105,7 +89,6 @@ fi
 # -----------------------------------------------------------------------------
 # Conda Initialization (Anaconda)
 # -----------------------------------------------------------------------------
-# Use conda from your Anaconda installation (universal using $HOME)
 __conda_setup="$("$HOME/anaconda3/bin/conda" "shell.zsh" "hook" 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
@@ -120,4 +103,16 @@ unset __conda_setup
 
 # Activate the 'Finley' Conda environment
 conda activate Finley
+
+# -----------------------------------------------------------------------------
+# Kitty Shell Integration
+# -----------------------------------------------------------------------------
+# Only run this if we’re in a kitty session (TERM set to xterm-kitty)
+if [[ "$TERM" == "xterm-kitty" ]]; then
+    echo "Loading kitty integration from: $KITTY_INSTALLATION_DIR" >&2
+    export KITTY_SHELL_INTEGRATION="enabled"
+    autoload -Uz -- "$KITTY_INSTALLATION_DIR"/shell-integration/zsh/kitty-integration
+    kitty-integration
+    unfunction kitty-integration
+fi
 
