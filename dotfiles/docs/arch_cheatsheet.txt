@@ -1,0 +1,21 @@
+# Useful System Commands
+
+# Switch to Integrated GPU (AMDi)
+sudo supergfxctl --mode Integrated
+
+# Switch to Hybrid GPU mode (AMDi + Discrete)
+sudo supergfxctl --mode Hybrid
+
+# Check battery performance metrics
+upower -i $(upower -e | grep batter)
+
+# Set screen brightness
+brightnessctl set 60%  #set whatever percent brightness you want
+
+# Connecting to airpods
+bluetoothctl
+power on
+connect 90:9C:4A:E8:C1:9B
+
+# Adjusting volume
+wpctl set-volume @DEFAULT_AUDIO_SINK@ 40%

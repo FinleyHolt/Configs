@@ -1,6 +1,8 @@
 # -----------------------------------------------------------------------------
 # Basic PATH Setup
 # -----------------------------------------------------------------------------
+# Set path to dotfiles repository
+export DOTFILES_DIR="$(dirname $(readlink -f ${HOME}/.zshrc))"
 export PATH="$HOME/.local/bin:$PATH"
 
 # Set kitty as default terminal
@@ -72,7 +74,7 @@ alias lt='colorls --tree'
 # -----------------------------------------------------------------------------
 # System Helper Aliases
 # -----------------------------------------------------------------------------
-alias help-arch='cat ~/arch_cheatsheet.txt'
+alias help-arch='cat ${DOTFILES_DIR}/docs/arch_cheatsheet.txt'
 
 # -----------------------------------------------------------------------------
 # Ruby Gems Bin Directory
