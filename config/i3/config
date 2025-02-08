@@ -92,7 +92,7 @@ bindsym $mod+space focus mode_toggle
 bindsym $mod+a focus parent
 
 # Define default workspaces
-set $ws1 "1"
+set $ws1 "1: Terminal"
 set $ws2 "2"
 set $ws3 "3"
 set $ws4 "4"
@@ -168,8 +168,8 @@ assign [class="Spotify"] $ws5
 # --------------------------------------------------------------------
 # Startup: Launch apps on specific workspaces.
 # --------------------------------------------------------------------
-# Start kitty terminal in workspace 1
-exec --no-startup-id i3-msg 'workspace 1; exec kitty'
+# Start kitty terminal in workspace 1: Terminal
+exec --no-startup-id i3-msg 'workspace "1: Terminal"; exec kitty'
 
 # Start Spotify in workspace 5
 exec --no-startup-id spotify
