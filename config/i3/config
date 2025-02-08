@@ -20,7 +20,7 @@ font pango:monospace 8
 exec --no-startup-id dex --autostart --environment i3
 
 # Start compositor for transparency effects
-exec --no-startup-id picom -b
+exec_always --no-startup-id pkill picom; picom --experimental-backends -b
 
 # Lock the screen before suspend
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
