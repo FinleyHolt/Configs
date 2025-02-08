@@ -165,8 +165,8 @@ assign [class="Spotify"] $ws5
 # --------------------------------------------------------------------
 # Startup: Launch apps on specific workspaces.
 # --------------------------------------------------------------------
-# Start kitty terminal in workspace 1
-exec --no-startup-id i3-msg 'workspace 1; exec kitty'
+# Start kitty terminal in workspace 1 with zsh
+exec --no-startup-id i3-msg 'workspace 1; exec kitty -e /usr/bin/zsh'
 
 # Start Spotify in workspace 5
 exec --no-startup-id spotify
