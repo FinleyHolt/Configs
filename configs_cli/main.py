@@ -296,6 +296,19 @@ def create_symlinks(repo_dir):
         os.remove(tmux_dest)
     os.symlink(tmux_src, tmux_dest)
     print(f"Created symlink: {tmux_dest} -> {tmux_src}")
+    
+    # Install tmux plugin manager if not already installed
+    tpm_dir = os.path.expanduser("~/.tmux/plugins/tpm")
+    if not os.path.exists(tpm_dir):
+        print("Installing Tmux Plugin Manager (TPM)")
+        subprocess.run(["git", "clone", "https://github.com/tmux-plugins/tpm", tpm_dir], check=True)
+    
+    # Source tmux config to load plugins
+    try:
+        subprocess.run(["tmux", "source", "~/.tmux.conf"], check=True)
+        print("Tmux configuration sourced successfully")
+    except subprocess.CalledProcessError:
+        print("Note: Run 'tmux source ~/.tmux.conf' after starting tmux to load plugins")
 
     # Create symlink for Neovim config (placed in ~/.config/nvim).
     nvim_src = os.path.abspath(os.path.join(config_dir, "nvim"))
