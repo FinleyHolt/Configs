@@ -142,7 +142,7 @@ def install_dependencies(system):
         "zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom",
         "spotify", "slack-desktop", "discord", "feh", "rofi", "dunst",
         "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
-        "alsa-utils", "pulseaudio", "pavucontrol", "network-manager",
+        "alsa-utils", "pulseaudio", "pavucontrol", "networkmanager",
         "network-manager-applet", "bluez", "bluez-utils", "blueman"
     ]
     system = system.lower()
