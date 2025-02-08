@@ -486,8 +486,9 @@ Examples:
   configs-cli source
 
 Common Mistakes:
-  ❌ configs-cli --system arch        # Wrong! Missing 'setup' command
-  ✅ configs-cli setup --system arch  # Correct!
+  ❌ configs-cli --system arch                    # Wrong! Missing 'setup' command
+  ❌ configs-cli setup --system arch              # Wrong! Missing --repo argument
+  ✅ configs-cli setup --system arch --repo ~/my-configs  # Correct!
 """)
         return
 
