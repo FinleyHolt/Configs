@@ -168,11 +168,11 @@ assign [class="Spotify"] $ws5
 # --------------------------------------------------------------------
 # Startup: Launch apps on specific workspaces.
 # --------------------------------------------------------------------
-# Start kitty terminal in workspace 1: Terminal
-exec --no-startup-id i3-msg 'workspace "1: Terminal"; exec kitty'
+# Run the custom startup script to set up the default layout.
+exec --no-startup-id ~/.config/i3/i3-setup.sh
 
 # Start Spotify in workspace 5
 exec --no-startup-id spotify
 
-# Run the custom startup script to set up the default layout.
-exec --no-startup-id ~/.config/i3/i3-setup.sh
+# Start kitty terminal in workspace 1: Terminal and focus it
+exec --no-startup-id "i3-msg 'workspace \"1: Terminal\"; exec kitty'"

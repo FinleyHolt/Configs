@@ -10,11 +10,6 @@
 # Wait a bit for i3 to fully start up.
 sleep 2
 
-# Workspace 1: Terminal
-i3-msg 'workspace 1: Terminal'
-sleep 1
-i3-msg 'exec i3-sensible-terminal'
-sleep 1
 
 # Workspace 2: Firefox
 i3-msg 'workspace 2: Firefox'
