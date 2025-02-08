@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 import shutil
+import tempfile
 
 def install_oh_my_zsh_theme():
     """Install the Catppuccin theme and zsh plugins"""
@@ -322,6 +323,24 @@ def print_source_commands():
     print(f"source {os.path.join(home, '.zshrc')}")
     print("Also, if new executables are not found, try running 'rehash' in your shell.")
 
+def configure_keyboard(repo_dir):
+    """Configure keyboard settings using Xorg"""
+    xorg_dir = "/etc/X11/xorg.conf.d"
+    keyboard_conf = os.path.join(xorg_dir, "00-keyboard.conf")
+    source_conf = os.path.join(repo_dir, "config/xorg/00-keyboard.conf")
+    
+    print_step("Configuring keyboard settings")
+    
+    # Create directory if it doesn't exist
+    if not os.path.exists(xorg_dir):
+        subprocess.run(["sudo", "mkdir", "-p", xorg_dir], check=True)
+    
+    # Copy the keyboard configuration file
+    subprocess.run(["sudo", "cp", source_conf, keyboard_conf], check=True)
+    subprocess.run(["sudo", "chmod", "644", keyboard_conf], check=True)
+    
+    print(f"Keyboard configuration copied to {keyboard_conf}")
+
 def print_step(message):
     """Print a formatted step message"""
     print("\n" + "="*80)
@@ -402,6 +421,10 @@ Common Mistakes:
             install_oh_my_zsh()
         create_symlinks(args.repo)
         if args.system != "windows":
+            # Configure keyboard before shell changes
+            if args.system in ["arch", "ubuntu"]:  # Only for Linux systems
+                configure_keyboard(args.repo)
+            
             zsh_path = shutil.which("zsh")
             if zsh_path:
                 set_default_shell(zsh_path)
