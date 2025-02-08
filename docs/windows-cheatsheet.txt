@@ -1,0 +1,26 @@
+# Windows System Commands
+
+# System Information
+systeminfo
+
+# Check disk space
+dir
+wmic logicaldisk get size,freespace,caption
+
+# Network commands
+ipconfig /all
+netstat -an
+
+# Task Manager from command line
+tasklist
+taskkill /IM "process.exe"
+
+# System file checker
+sfc /scannow
+
+# Check/Repair disk
+chkdsk /f
+
+# Power commands
+shutdown /r /t 0  # Restart
+shutdown /s /t 0  # Shutdown

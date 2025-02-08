@@ -1,0 +1,28 @@
+# Ubuntu System Commands
+
+# Update package lists and upgrade packages
+sudo apt update
+sudo apt upgrade
+
+# Install a package
+sudo apt install package-name
+
+# Remove a package
+sudo apt remove package-name
+
+# Check system resource usage
+top
+htop  # if installed
+
+# Check disk space
+df -h
+
+# Check memory usage
+free -h
+
+# Network commands
+ifconfig  # or
+ip addr show
+
+# System logs
+tail -f /var/log/syslog
