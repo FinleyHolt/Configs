@@ -75,6 +75,8 @@ alias lt='colorls --tree'
 # System Helper Aliases
 # -----------------------------------------------------------------------------
 alias help-arch='cat ${DOTFILES_DIR}/../docs/arch_cheatsheet.txt'
+alias help-ubuntu='cat ${DOTFILES_DIR}/../docs/ubuntu-cheatsheet.txt'
+alias help-windows='cat ${DOTFILES_DIR}/../docs/windows-cheatsheet.txt'
 
 # -----------------------------------------------------------------------------
 # Ruby Gems Bin Directory
