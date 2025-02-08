@@ -122,6 +122,21 @@ def check_dependency(pkg):
             pass
     return False
 
+def install_jetbrains_font():
+    """Install JetBrains Mono Nerd Font if not already installed"""
+    try:
+        # Check if font is installed
+        result = subprocess.run(["pacman", "-Qq", "ttf-jetbrains-mono-nerd"], 
+                              capture_output=True)
+        if result.returncode != 0:
+            print_step("Installing JetBrains Mono Nerd Font")
+            subprocess.check_call(["sudo", "pacman", "-S", "--noconfirm", "ttf-jetbrains-mono-nerd"])
+            print("JetBrains Mono Nerd Font installed successfully")
+        else:
+            print("JetBrains Mono Nerd Font is already installed")
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing JetBrains Mono Nerd Font: {e}")
+
 def install_dependencies(system):
     dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom", "spotify", "slack-desktop", "discord"]
     system = system.lower()
@@ -176,6 +191,9 @@ def install_dependencies(system):
         
         if not official_packages and not aur_packages:
             print("All required packages are already installed")
+            
+        # Install JetBrains Mono Nerd Font
+        install_jetbrains_font()
         
         # Now install the colorls gem with proper permissions
         print_step("Installing colorls gem")
