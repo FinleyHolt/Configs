@@ -24,21 +24,28 @@ The CLI provides several commands:
 Install dependencies and create symlinks:
 
 ```bash
-configs-cli setup --system [ubuntu|arch|macos|windows]
+configs-cli setup --system [ubuntu|arch|macos|windows] --repo /path/to/configs
 ```
 
-Note: The `setup` command is required. For example:
+IMPORTANT: Two arguments are required:
+1. The `setup` command itself must be specified
+2. The `--repo` argument must point to where you cloned this repository
+
+For example:
 ```bash
 # Correct usage:
-configs-cli setup --system arch --repo ~/my-configs
+configs-cli setup --system arch --repo ~/Github/Configs  # Points to cloned repo
 
-# Incorrect usage:
-configs-cli --system arch  # Wrong! Missing 'setup' command
+# Common mistakes:
+configs-cli --system arch                    # Wrong! Missing 'setup' command
+configs-cli setup --system arch              # Wrong! Missing --repo argument
+configs-cli setup --repo ~/Github/Configs    # Wrong! Missing --system argument
 ```
 
 Options:
+- `setup`: (Required) The command to run the setup process
 - `--system`: (Required) Specify your operating system
-- `--repo`: Path to your configs repository (default: ~/.configs)
+- `--repo`: (Required) Path to your configs repository
 - `--repo-url`: Git URL to clone if repo doesn't exist
 
 ### Help
