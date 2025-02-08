@@ -10,6 +10,9 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         'argparse',
+        'setuptools>=64',
+        'wheel',
+        'subprocess.run',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

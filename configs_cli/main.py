@@ -138,7 +138,13 @@ def install_jetbrains_font():
         print(f"Error installing JetBrains Mono Nerd Font: {e}")
 
 def install_dependencies(system):
-    dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom", "spotify", "slack-desktop", "discord"]
+    dependencies = [
+        "zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom",
+        "spotify", "slack-desktop", "discord", "feh", "rofi", "dunst",
+        "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
+        "alsa-utils", "pulseaudio", "pavucontrol", "network-manager",
+        "network-manager-applet", "bluez", "bluez-utils", "blueman"
+    ]
     system = system.lower()
     
     # Filter out already installed dependencies
