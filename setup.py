@@ -12,7 +12,6 @@ setup(
         'argparse',
         'setuptools>=64',
         'wheel',
-        'subprocess.run',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
