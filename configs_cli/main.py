@@ -358,6 +358,33 @@ def set_default_shell(shell):
     else:
         print("Skipping default shell change on Windows.")
 
+def check_symlinks():
+    """Check all symlinks created by configs-cli"""
+    home = os.path.expanduser("~")
+    config_dir = os.path.join(home, ".config")
+    
+    # Define all expected symlinks
+    expected_links = {
+        os.path.join(home, ".zshrc"): "zshrc",
+        os.path.join(home, ".tmux.conf"): "tmux.conf",
+        os.path.join(config_dir, "nvim"): "nvim config",
+        os.path.join(config_dir, "i3"): "i3 config",
+        os.path.join(config_dir, "picom"): "picom config",
+        os.path.join(config_dir, "kitty"): "kitty config"
+    }
+    
+    print_step("Checking symlinks status")
+    
+    for link_path, description in expected_links.items():
+        if os.path.exists(link_path):
+            if os.path.islink(link_path):
+                target = os.path.realpath(link_path)
+                print(f"✓ {description}: {link_path} -> {target}")
+            else:
+                print(f"⚠ {description}: {link_path} exists but is not a symlink")
+        else:
+            print(f"✗ {description}: {link_path} does not exist")
+
 def print_source_commands():
     home = os.path.expanduser("~")
     print(f"source {os.path.join(home, '.zshrc')}")
@@ -407,6 +434,9 @@ def main():
     
     # Subcommand: source.
     subparsers.add_parser("source", help="Output commands to source your configuration")
+    
+    # Subcommand: check-links.
+    subparsers.add_parser("check-links", help="Check status of all config symlinks")
     
     # Subcommand: help.
     help_parser = subparsers.add_parser("help", help="Show detailed help information")
@@ -474,6 +504,8 @@ Common Mistakes:
             print("Default shell change skipped on Windows.")
     elif args.command == "source":
         print_source_commands()
+    elif args.command == "check-links":
+        check_symlinks()
 
 if __name__ == "__main__":
     main()
