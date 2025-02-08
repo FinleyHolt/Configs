@@ -123,7 +123,7 @@ def check_dependency(pkg):
     return False
 
 def install_dependencies(system):
-    dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom"]
+    dependencies = ["zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom", "spotify", "slack-desktop", "discord"]
     system = system.lower()
     
     # Filter out already installed dependencies
@@ -160,10 +160,21 @@ def install_dependencies(system):
                             capture_output=True).returncode != 0:
                 to_install.append(plugin)
         
-        if to_install:
-            print(f"Installing packages: {', '.join(to_install)}")
-            subprocess.check_call(["sudo", "pacman", "-S", "--noconfirm"] + to_install)
-        else:
+        # Separate AUR packages from official repo packages
+        aur_packages = ["spotify", "slack-desktop"]
+        official_packages = [pkg for pkg in to_install if pkg not in aur_packages]
+        
+        if official_packages:
+            print(f"Installing official packages: {', '.join(official_packages)}")
+            subprocess.check_call(["sudo", "pacman", "-S", "--noconfirm"] + official_packages)
+        
+        # Install AUR packages using yay
+        for pkg in aur_packages:
+            if subprocess.run(["pacman", "-Qq", pkg], capture_output=True).returncode != 0:
+                print(f"Installing AUR package: {pkg}")
+                subprocess.check_call(["yay", "-S", "--noconfirm", pkg])
+        
+        if not official_packages and not aur_packages:
             print("All required packages are already installed")
         
         # Now install the colorls gem with proper permissions
