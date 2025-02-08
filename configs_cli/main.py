@@ -364,9 +364,12 @@ def check_symlinks():
     config_dir = os.path.join(home, ".config")
     
     # Define all expected symlinks
-    expected_links = {
+    home_links = {
         os.path.join(home, ".zshrc"): "zshrc",
         os.path.join(home, ".tmux.conf"): "tmux.conf",
+    }
+    
+    config_links = {
         os.path.join(config_dir, "nvim"): "nvim config",
         os.path.join(config_dir, "i3"): "i3 config",
         os.path.join(config_dir, "picom"): "picom config",
@@ -375,15 +378,21 @@ def check_symlinks():
     
     print_step("Checking symlinks status")
     
-    for link_path, description in expected_links.items():
-        if os.path.exists(link_path):
-            if os.path.islink(link_path):
-                target = os.path.realpath(link_path)
-                print(f"✓ {description}: {link_path} -> {target}")
+    def check_link_group(links, header):
+        print(f"\n{header}:")
+        for link_path, description in links.items():
+            if os.path.exists(link_path):
+                if os.path.islink(link_path):
+                    target = os.path.realpath(link_path)
+                    print(f"\033[92m✓\033[0m {description}: {link_path} -> {target}")
+                else:
+                    print(f"\033[93m⚠\033[0m {description}: {link_path} exists but is not a symlink")
             else:
-                print(f"⚠ {description}: {link_path} exists but is not a symlink")
-        else:
-            print(f"✗ {description}: {link_path} does not exist")
+                print(f"\033[91m✗\033[0m {description}: {link_path} does not exist")
+    
+    check_link_group(home_links, "Home directory symlinks")
+    check_link_group(config_links, "Config directory symlinks")
+    print()  # Add final newline for cleaner output
 
 def print_source_commands():
     home = os.path.expanduser("~")
