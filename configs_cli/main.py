@@ -325,6 +325,17 @@ def create_symlinks(repo_dir):
     os.symlink(picom_src, picom_dest)
     print(f"Created symlink: {picom_dest} -> {picom_src}")
 
+    # Create symlink for kitty config (placed in ~/.config/kitty).
+    kitty_src = os.path.abspath(os.path.join(config_dir, "kitty"))
+    kitty_dest = os.path.join(home, ".config", "kitty")
+    if os.path.exists(kitty_dest) or os.path.islink(kitty_dest):
+        if os.path.islink(kitty_dest):
+            os.remove(kitty_dest)
+        else:
+            shutil.rmtree(kitty_dest)
+    os.symlink(kitty_src, kitty_dest)
+    print(f"Created symlink: {kitty_dest} -> {kitty_src}")
+
 def set_default_shell(shell):
     if os.name != 'nt':
         # Get the current shell from /etc/passwd instead of environment
