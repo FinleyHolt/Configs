@@ -5,12 +5,7 @@ import os
 import sys
 import shutil
 import tempfile
-from rich.console import Console
-from rich.progress import Progress
 from pathlib import Path
-
-# Initialize rich console
-console = Console()
 
 def install_oh_my_zsh_theme():
     """Install the Catppuccin theme and zsh plugins"""
@@ -444,7 +439,9 @@ def configure_keyboard(repo_dir):
 
 def print_step(message):
     """Print a formatted step message"""
-    console.rule(f"[bold blue]{message}")
+    print("\n" + "="*80)
+    print(f">>> {message}")
+    print("="*80 + "\n")
 
 def setup_filesystem():
     """Create standard filesystem structure"""
@@ -463,23 +460,21 @@ def setup_filesystem():
         "Github": []
     }
     
-    console.print("\n[bold]Setting up filesystem structure...[/bold]")
-    with Progress() as progress:
-        task = progress.add_task("[cyan]Creating directories...", total=len(dirs))
+    print_step("Setting up filesystem structure...")
+    for parent, subdirs in dirs.items():
+        parent_path = os.path.join(home, parent)
+        os.makedirs(parent_path, exist_ok=True)
+        print(f"Created: {parent_path}")
         
-        for parent, subdirs in dirs.items():
-            parent_path = os.path.join(home, parent)
-            os.makedirs(parent_path, exist_ok=True)
-            
-            for subdir in subdirs:
-                os.makedirs(os.path.join(parent_path, subdir), exist_ok=True)
-            
-            progress.advance(task)
+        for subdir in subdirs:
+            subdir_path = os.path.join(parent_path, subdir)
+            os.makedirs(subdir_path, exist_ok=True)
+            print(f"Created: {subdir_path}")
     
-    console.print("[green]✓[/green] Filesystem structure created successfully")
+    print("\nFilesystem structure created successfully!")
 
 def main():
-    console.print("[bold blue]Starting configs-cli setup tool[/bold blue]")
+    print_step("Starting configs-cli setup tool")
     parser = argparse.ArgumentParser(
         description="Setup Configs and Dependencies CLI Tool"
     )

@@ -13,10 +13,6 @@ authors = [
 dependencies = [
     "argparse",
     "setuptools>=64",
-    "wheel",
-    "rich>=10.0.0",  # For better console output
-    "markdown-it-py>=2.2.0",
-    "pygments<3.0.0,>=2.13.0",
-    "mdurl~=0.1"
+    "wheel"
 ]
 
