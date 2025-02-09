@@ -13,6 +13,7 @@ authors = [
 dependencies = [
     "argparse",
     "setuptools>=64",
-    "wheel"
+    "wheel",
+    "rich>=10.0.0"  # For better console output
 ]
 

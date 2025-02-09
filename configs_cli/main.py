@@ -5,6 +5,12 @@ import os
 import sys
 import shutil
 import tempfile
+from rich.console import Console
+from rich.progress import Progress
+from pathlib import Path
+
+# Initialize rich console
+console = Console()
 
 def install_oh_my_zsh_theme():
     """Install the Catppuccin theme and zsh plugins"""
@@ -438,12 +444,42 @@ def configure_keyboard(repo_dir):
 
 def print_step(message):
     """Print a formatted step message"""
-    print("\n" + "="*80)
-    print(f">>> {message}")
-    print("="*80 + "\n")
+    console.rule(f"[bold blue]{message}")
+
+def setup_filesystem():
+    """Create standard filesystem structure"""
+    home = os.path.expanduser("~")
+    
+    # Define standard directories
+    dirs = {
+        "Documents": ["Projects", "Work", "Personal"],
+        "Downloads": ["temp"],
+        "Pictures": ["screenshots", "wallpapers"],
+        "Videos": [],
+        ".config": [],
+        ".local/share": [],
+        ".local/bin": [],
+        ".cache": [],
+        "Github": []
+    }
+    
+    console.print("\n[bold]Setting up filesystem structure...[/bold]")
+    with Progress() as progress:
+        task = progress.add_task("[cyan]Creating directories...", total=len(dirs))
+        
+        for parent, subdirs in dirs.items():
+            parent_path = os.path.join(home, parent)
+            os.makedirs(parent_path, exist_ok=True)
+            
+            for subdir in subdirs:
+                os.makedirs(os.path.join(parent_path, subdir), exist_ok=True)
+            
+            progress.advance(task)
+    
+    console.print("[green]✓[/green] Filesystem structure created successfully")
 
 def main():
-    print_step("Starting configs-cli setup tool")
+    console.print("[bold blue]Starting configs-cli setup tool[/bold blue]")
     parser = argparse.ArgumentParser(
         description="Setup Configs and Dependencies CLI Tool"
     )
@@ -506,6 +542,9 @@ Common Mistakes:
         return
 
     if args.command == "setup":
+        # Set up filesystem structure first
+        setup_filesystem()
+        
         # If the repository doesn't exist, attempt to clone it if --repo-url is provided.
         if not os.path.isdir(args.repo):
             if args.repo_url:
