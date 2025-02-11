@@ -31,8 +31,11 @@ floating_modifier $mod
 # Enable tiling drag
 tiling_drag modifier titlebar
 
+# Set default terminal
+set $term kitty
+
 # start a terminal
-bindsym $mod+Shift+Return exec kitty
+bindsym $mod+Shift+Return exec $term
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -41,10 +44,10 @@ bindsym $mod+Shift+q kill
 bindsym $mod+Shift+d exec --no-startup-id dmenu_run
 
 # Change focus
-bindsym $mod+Shift+j focus left
-bindsym $mod+Shift+k focus down
-bindsym $mod+Shift+l focus up
-bindsym $mod+Shift+semicolon focus right
+bindsym $mod+Shift+h focus left
+bindsym $mod+Shift+j focus down
+bindsym $mod+Shift+k focus up
+bindsym $mod+Shift+l focus right
 bindsym $mod+Shift+Left focus left
 bindsym $mod+Shift+Down focus down
 bindsym $mod+Shift+Up focus up
@@ -152,5 +155,7 @@ assign [class="Spotify"] $ws5
 
 # Startup applications
 exec --no-startup-id ~/.config/i3/i3-setup.sh
-exec --no-startup-id spotify
-exec --no-startup-id "i3-msg 'workspace \"1: Terminal\"; exec kitty'"
+
+# Start applications in specific workspaces
+exec --no-startup-id "i3-msg 'workspace \"1: Terminal\"; exec kitty; workspace \"2\"; exec kitty; workspace \"3\"; exec kitty; workspace \"1: Terminal\"'"
+exec --no-startup-id "i3-msg 'workspace \"5: Spotify\"; exec spotify'"
