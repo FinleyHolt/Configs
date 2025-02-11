@@ -1,0 +1,156 @@
+# i3 config file (v4) - VM Configuration
+# All bindings use Super+Shift to avoid conflicts with host
+
+set $mod Mod4
+
+# Font for window titles
+font pango:monospace 8
+
+# Start XDG autostart .desktop files using dex
+exec --no-startup-id dex --autostart --environment i3
+
+# Start compositor for transparency effects
+exec_always --no-startup-id pkill picom; picom -b
+
+# Lock the screen before suspend
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# Network manager applet
+exec --no-startup-id nm-applet
+
+# PulseAudio volume control keybindings
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Use Mouse+$mod to drag floating windows
+floating_modifier $mod
+
+# Enable tiling drag
+tiling_drag modifier titlebar
+
+# start a terminal
+bindsym $mod+Shift+Return exec kitty
+
+# kill focused window
+bindsym $mod+Shift+q kill
+
+# start dmenu
+bindsym $mod+Shift+d exec --no-startup-id dmenu_run
+
+# Change focus
+bindsym $mod+Shift+j focus left
+bindsym $mod+Shift+k focus down
+bindsym $mod+Shift+l focus up
+bindsym $mod+Shift+semicolon focus right
+bindsym $mod+Shift+Left focus left
+bindsym $mod+Shift+Down focus down
+bindsym $mod+Shift+Up focus up
+bindsym $mod+Shift+Right focus right
+
+# Move focused window
+bindsym $mod+Shift+Ctrl+j move left
+bindsym $mod+Shift+Ctrl+k move down
+bindsym $mod+Shift+Ctrl+l move up
+bindsym $mod+Shift+Ctrl+semicolon move right
+bindsym $mod+Shift+Ctrl+Left move left
+bindsym $mod+Shift+Ctrl+Down move down
+bindsym $mod+Shift+Ctrl+Up move up
+bindsym $mod+Shift+Ctrl+Right move right
+
+# Split orientation
+bindsym $mod+Shift+h split h
+bindsym $mod+Shift+v split v
+
+# Toggle fullscreen
+bindsym $mod+Shift+f fullscreen toggle
+
+# Change container layout
+bindsym $mod+Shift+s layout stacking
+bindsym $mod+Shift+w layout tabbed
+bindsym $mod+Shift+e layout toggle split
+
+# Toggle tiling/floating
+bindsym $mod+Shift+space floating toggle
+
+# Toggle focus mode
+bindsym $mod+Shift+Shift+space focus mode_toggle
+
+# Focus parent container
+bindsym $mod+Shift+a focus parent
+
+# Define workspaces
+set $ws1 "1: Terminal"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5: Spotify"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# Switch to workspace
+bindsym $mod+Shift+1 workspace number $ws1
+bindsym $mod+Shift+2 workspace number $ws2
+bindsym $mod+Shift+3 workspace number $ws3
+bindsym $mod+Shift+4 workspace number $ws4
+bindsym $mod+Shift+5 workspace number $ws5
+bindsym $mod+Shift+6 workspace number $ws6
+bindsym $mod+Shift+7 workspace number $ws7
+bindsym $mod+Shift+8 workspace number $ws8
+bindsym $mod+Shift+9 workspace number $ws9
+bindsym $mod+Shift+0 workspace number $ws10
+
+# Move container to workspace
+bindsym $mod+Shift+Ctrl+1 move container to workspace number $ws1
+bindsym $mod+Shift+Ctrl+2 move container to workspace number $ws2
+bindsym $mod+Shift+Ctrl+3 move container to workspace number $ws3
+bindsym $mod+Shift+Ctrl+4 move container to workspace number $ws4
+bindsym $mod+Shift+Ctrl+5 move container to workspace number $ws5
+bindsym $mod+Shift+Ctrl+6 move container to workspace number $ws6
+bindsym $mod+Shift+Ctrl+7 move container to workspace number $ws7
+bindsym $mod+Shift+Ctrl+8 move container to workspace number $ws8
+bindsym $mod+Shift+Ctrl+9 move container to workspace number $ws9
+bindsym $mod+Shift+Ctrl+0 move container to workspace number $ws10
+
+# Reload/Restart
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+
+# Exit i3
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit i3?' -B 'Yes' 'i3-msg exit'"
+
+# Resize mode
+mode "resize" {
+    bindsym j resize shrink width 10 px or 10 ppt
+    bindsym k resize grow height 10 px or 10 ppt
+    bindsym l resize shrink height 10 px or 10 ppt
+    bindsym semicolon resize grow width 10 px or 10 ppt
+
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+Shift+r mode "default"
+}
+
+bindsym $mod+Shift+r mode "resize"
+
+bar {
+    status_command i3status
+}
+
+# Window assignments
+assign [class="Spotify"] $ws5
+
+# Startup applications
+exec --no-startup-id ~/.config/i3/i3-setup.sh
+exec --no-startup-id spotify
+exec --no-startup-id "i3-msg 'workspace \"1: Terminal\"; exec kitty'"
