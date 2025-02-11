@@ -386,13 +386,6 @@ def create_symlinks(repo_dir, args):
     # Create symlink for i3 config (placed in ~/.config/i3).
     i3_src = os.path.abspath(os.path.join(config_dir, "i3"))
     
-    # If VM flag is set, use VM-specific i3 config
-    if hasattr(args, 'vm') and args.vm:
-        vm_config = os.path.join(i3_src, "config.vm")
-        if os.path.exists(vm_config):
-            os.rename(os.path.join(i3_src, "config"), os.path.join(i3_src, "config.host"))
-            shutil.copy2(vm_config, os.path.join(i3_src, "config"))
-            print("Using VM-specific i3 configuration")
     i3_dest = os.path.join(home, ".config", "i3")
     if os.path.exists(i3_dest) or os.path.islink(i3_dest):
         if os.path.islink(i3_dest):
@@ -584,8 +577,6 @@ def main():
                               help="Path to your Configs repository (or set CONFIGS_REPO)")
     setup_parser.add_argument("--repo-url", default=None,
                               help="Git URL of your repository (if not already cloned)")
-    setup_parser.add_argument("--vm", action="store_true",
-                              help="Use VM-specific configuration (different key bindings)")
     
     # Subcommand: source.
     subparsers.add_parser("source", help="Output commands to source your configuration")
