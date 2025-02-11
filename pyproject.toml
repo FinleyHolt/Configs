@@ -4,15 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "configs_cli"
-version = "0.1.0"
-description = "A CLI tool to install dependencies and set up your dotfiles"
-requires-python = ">=3.6"
+version = "0.2.0"
+description = "CLI tool for setting up a headless development environment"
+requires-python = ">=3.9"
 authors = [
     {name = "Finley", email = "finley@example.com"}
 ]
 dependencies = [
-    "argparse",
+    "rich>=13.0.0",
     "setuptools>=64",
     "wheel"
 ]
+
+[project.scripts]
+configs-cli = "configs_cli.main:main"
 
