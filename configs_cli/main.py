@@ -167,14 +167,32 @@ def install_dependencies(system):
             print("Installing core packages...")
             subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + core_packages, check=True)
             
+            # Check and install yay if needed
+            if not shutil.which("yay"):
+                print("\nInstalling yay AUR helper...")
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    try:
+                        subprocess.run(["git", "clone", "https://aur.archlinux.org/yay.git", tmpdir], check=True)
+                        subprocess.run(["makepkg", "-si", "--noconfirm"], cwd=tmpdir, check=True)
+                        print("yay installed successfully")
+                    except subprocess.CalledProcessError:
+                        print("Failed to install yay. Please install it manually.")
+                        print("You can do this by running:")
+                        print("git clone https://aur.archlinux.org/yay.git")
+                        print("cd yay && makepkg -si")
+                        return
+
             # Install AUR packages
-            aur_packages = ["spotify", "slack-desktop"]
-            print("\nInstalling AUR packages...")
-            for pkg in aur_packages:
-                try:
-                    subprocess.run(["yay", "-S", "--needed", "--noconfirm", pkg], check=True)
-                except subprocess.CalledProcessError:
-                    print(f"Failed to install AUR package: {pkg}")
+            if shutil.which("yay"):
+                aur_packages = ["spotify", "slack-desktop"]
+                print("\nInstalling AUR packages...")
+                for pkg in aur_packages:
+                    try:
+                        subprocess.run(["yay", "-S", "--needed", "--noconfirm", pkg], check=True)
+                    except subprocess.CalledProcessError:
+                        print(f"Failed to install AUR package: {pkg}")
+            else:
+                print("\nSkipping AUR packages as yay is not available")
             
             # Install colorls gem
             print("\nInstalling colorls gem...")
