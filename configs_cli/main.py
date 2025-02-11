@@ -322,7 +322,7 @@ def ensure_ruby_gem_bin_in_zshrc(zshrc_path):
     except Exception as e:
         print(f"Skipping local gem PATH update: {e}")
 
-def create_symlinks(repo_dir):
+def create_symlinks(repo_dir, args):
     home = os.path.expanduser("~")
     dotfiles_dir = os.path.join(repo_dir, "dotfiles")
     config_dir = os.path.join(repo_dir, "config")
@@ -643,7 +643,7 @@ Common Mistakes:
         install_dependencies(args.system)
         if args.system != "windows":
             install_oh_my_zsh()
-        create_symlinks(args.repo)
+        create_symlinks(args.repo, args)
         if args.system != "windows":
             # Configure keyboard before shell changes
             if args.system in ["arch", "ubuntu"]:  # Only for Linux systems
