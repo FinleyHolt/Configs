@@ -82,6 +82,15 @@ configs-cli source
 - Git
 - Internet connection for downloading dependencies
 
+### Additional Requirements for KDE Setup
+
+If you plan to use KDE Plasma as your desktop environment (--de kde), ensure these are installed first:
+- SDDM (Simple Desktop Display Manager)
+```bash
+sudo pacman -S sddm sddm-kcm
+sudo systemctl enable sddm
+```
+
 ## License
 
 MIT License
