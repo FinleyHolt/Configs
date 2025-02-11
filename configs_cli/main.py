@@ -211,9 +211,6 @@ def install_dependencies(system):
                         print("\nContinuing with remaining packages...")
                         continue
         
-        if not official_packages and not aur_packages:
-            print("All required packages are already installed")
-            
         # Install JetBrains Mono Nerd Font
         install_jetbrains_font()
         
