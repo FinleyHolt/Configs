@@ -204,7 +204,32 @@ def install_dependencies(system):
             except subprocess.CalledProcessError:
                 print("Failed to install colorls. You may need to install it manually with:")
                 print("gem install colorls --user-install")
+
+            # Reset and start necessary services
+            print("\nResetting and starting necessary services...")
+            services = [
+                "NetworkManager",
+                "bluetooth",
+                "pipewire",
+                "pipewire-pulse"
+            ]
             
+            for service in services:
+                try:
+                    print(f"Enabling and starting {service}...")
+                    subprocess.run(["sudo", "systemctl", "enable", service], check=True)
+                    subprocess.run(["sudo", "systemctl", "restart", service], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Warning: Failed to configure {service}: {e}")
+
+            # Reload i3
+            try:
+                subprocess.run(["i3-msg", "reload"], check=True)
+                subprocess.run(["i3-msg", "restart"], check=True)
+                print("i3 configuration reloaded")
+            except subprocess.CalledProcessError as e:
+                print(f"Warning: Failed to reload i3: {e}")
+
         except subprocess.CalledProcessError as e:
             print(f"Error during installation: {e}")
             print("Please check the error messages above and try to resolve any conflicts.")
