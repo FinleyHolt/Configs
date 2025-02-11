@@ -147,7 +147,7 @@ def install_dependencies(system):
         
         # Core packages from official repos
         core_packages = [
-            "zsh", "tmux", "neovim", "curl", "git", "wget",
+            "zsh", "tmux", "neovim", "curl", "git", "wget", "kitty",
             "i3-wm", "i3status", "i3blocks", "i3lock",
             "picom", "feh", "rofi", "dunst",
             "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",

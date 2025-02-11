@@ -41,8 +41,11 @@ floating_modifier $mod
 # Enable tiling drag by holding mod and clicking on the title bar
 tiling_drag modifier titlebar
 
+# Set default terminal
+set $term kitty
+
 # start a terminal
-bindsym $mod+Return exec kitty
+bindsym $mod+Return exec $term
 
 # kill focused window
 bindsym $mod+Shift+q kill
