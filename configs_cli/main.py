@@ -176,7 +176,7 @@ def install_dependencies(system, args):
             ],
             "kde": [
                 "plasma", "plasma-wayland-session", "plasma-desktop",
-                "sddm", "xorg-server", "xorg-xinit", "kde-applications-meta",
+                "plasma-sddm", "sddm", "xorg-server", "xorg-xinit", "kde-applications-meta",
                 "plasma-pa", "plasma-nm", "dolphin", "konsole"
             ]
         }
@@ -248,9 +248,15 @@ def install_dependencies(system, args):
                 print("\nLightDM enabled. After reboot, select i3 as your session.")
             elif args.de == "kde":
                 # Install and configure SDDM
-                subprocess.run(["sudo", "systemctl", "disable", "lightdm"], check=True, stderr=subprocess.DEVNULL)
+                try:
+                    subprocess.run(["sudo", "systemctl", "disable", "lightdm"], check=True, stderr=subprocess.DEVNULL)
+                except subprocess.CalledProcessError:
+                    pass  # It's ok if lightdm wasn't installed
+                
+                # Install and enable SDDM
+                subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "sddm"], check=True)
                 subprocess.run(["sudo", "systemctl", "enable", "sddm"], check=True)
-                print("\nSDDM enabled. After reboot, select Plasma (X11) or Plasma (Wayland).")
+                print("\nSDDM installed and enabled. After reboot, select Plasma (X11) or Plasma (Wayland).")
             
             for service in services:
                 try:
