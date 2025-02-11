@@ -150,13 +150,14 @@ def install_dependencies(system, args):
     if system in ["arch", "archlinux"]:
         print_step("Installing dependencies on Arch Linux")
         
-        # Install zsh first
-        print("Installing zsh...")
-        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "zsh"], check=True)
+        # Install essential packages first
+        print("Installing essential packages...")
+        essential_packages = ["zsh", "tmux"]
+        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + essential_packages, check=True)
         
         # Base packages for all environments
         base_packages = [
-            "tmux", "neovim", "curl", "git", "wget", "kitty",
+            "neovim", "curl", "git", "wget", "kitty",
             "pipewire", "pipewire-pulse", "wireplumber", "pavucontrol", "alsa-utils",
             "networkmanager", "network-manager-applet",
             "bluez", "bluez-utils", "blueman",
