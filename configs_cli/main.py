@@ -242,8 +242,11 @@ def install_dependencies(system, args):
             # Add display manager service based on DE choice
             if args.de == "i3":
                 services.append("lightdm")
+                print("\nAfter reboot, you'll need to log in via LightDM and select i3 as your session.")
             elif args.de == "kde":
                 services.append("sddm")
+                print("\nAfter reboot, SDDM (KDE's display manager) will start automatically.")
+                print("You can select Plasma (X11) or Plasma (Wayland) from the session menu.")
             
             for service in services:
                 try:
