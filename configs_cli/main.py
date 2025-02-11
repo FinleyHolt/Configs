@@ -156,7 +156,7 @@ def install_dependencies(system):
             "bluez", "bluez-utils", "blueman",
             "discord", "ruby", "ruby-rake", "gcc",
             "zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions",
-            "ttf-jetbrains-mono-nerd"
+            "ttf-jetbrains-mono-nerd", "lightdm", "lightdm-gtk-greeter"
         ]
         
         try:
@@ -211,7 +211,8 @@ def install_dependencies(system):
                 "NetworkManager",
                 "bluetooth",
                 "pipewire",
-                "pipewire-pulse"
+                "pipewire-pulse",
+                "lightdm"
             ]
             
             for service in services:
