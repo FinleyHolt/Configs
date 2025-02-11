@@ -162,9 +162,13 @@ def install_dependencies(system, args):
             "networkmanager", "network-manager-applet",
             "bluez", "bluez-utils", "blueman",
             "discord", "ruby", "ruby-rake", "gcc",
-            "zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions",
             "ttf-jetbrains-mono-nerd"
         ]
+
+        # Install zsh plugins separately to ensure they're found
+        print("\nInstalling zsh plugins...")
+        zsh_plugins = ["zsh-syntax-highlighting", "zsh-autosuggestions", "zsh-completions"]
+        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + zsh_plugins, check=True)
 
         # Environment-specific packages
         de_packages = {
@@ -252,9 +256,14 @@ def install_dependencies(system, args):
                     subprocess.run(["sudo", "systemctl", "disable", "lightdm"], check=True, stderr=subprocess.DEVNULL)
                 except subprocess.CalledProcessError:
                     pass  # It's ok if lightdm wasn't installed
+
+                # Install SDDM and Plasma first
+                print("\nInstalling SDDM and Plasma components...")
+                sddm_packages = ["sddm", "plasma-sddm", "plasma-desktop", "plasma-wayland-session"]
+                subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + sddm_packages, check=True)
                 
-                # Install and enable SDDM
-                subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "sddm"], check=True)
+                # Enable SDDM
+                print("Enabling SDDM service...")
                 subprocess.run(["sudo", "systemctl", "enable", "sddm"], check=True)
                 print("\nSDDM installed and enabled. After reboot, select Plasma (X11) or Plasma (Wayland).")
             
