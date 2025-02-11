@@ -278,8 +278,18 @@ def install_dependencies(system, args):
                 # Create default SDDM configuration
                 subprocess.run(["sudo", "mkdir", "-p", "/etc/sddm.conf.d"], check=True)
                 with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
-                    f.write("[Autologin]\nSession=plasma.desktop\n")
+                    f.write("""[General]
+Session=plasma
+[Theme]
+Current=breeze
+
+[Users]
+MaximumUid=60000
+MinimumUid=1000
+""")
                 subprocess.run(["sudo", "mv", f.name, "/etc/sddm.conf.d/kde_settings.conf"], check=True)
+                subprocess.run(["sudo", "chown", "root:root", "/etc/sddm.conf.d/kde_settings.conf"], check=True)
+                subprocess.run(["sudo", "chmod", "644", "/etc/sddm.conf.d/kde_settings.conf"], check=True)
                 
                 print("\nSDDM configured and enabled. System will boot into KDE Plasma after restart.")
             
