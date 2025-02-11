@@ -139,92 +139,62 @@ def install_jetbrains_font():
         print(f"Error installing JetBrains Mono Nerd Font: {e}")
 
 def install_dependencies(system):
-    dependencies = {
-        'base': ["zsh", "tmux", "neovim", "curl", "git", "wget"],
-        'wm': ["i3-wm", "i3status", "i3blocks", "i3lock", "picom", "feh", "rofi", "dunst"],
-        'xorg': ["xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot"],
-        'audio': ["pipewire", "pipewire-pulse", "wireplumber", "pavucontrol", "alsa-utils"],
-        'network': ["networkmanager", "network-manager-applet", "bluez", "bluez-utils", "blueman"],
-        'apps': ["discord"],
-        'aur': ["spotify", "slack-desktop"]
-    }
+    """Install system dependencies based on the operating system."""
     system = system.lower()
     
-    # Filter out already installed dependencies
-    to_install = [dep for dep in dependencies if not check_dependency(dep)]
-    
-    if not to_install:
-        print("All core dependencies are already installed")
-        return
-        
-    print(f"Installing missing dependencies: {', '.join(to_install)}")
-    if system in ["ubuntu", "debian"]:
-        print_step("Installing dependencies on Ubuntu/Debian")
-        subprocess.check_call(["sudo", "apt-get", "update"])
-        subprocess.check_call(["sudo", "apt-get", "install", "-y"] + dependencies)
-    elif system in ["arch", "archlinux"]:
+    if system in ["arch", "archlinux"]:
         print_step("Installing dependencies on Arch Linux")
         
-        # Add development tools and Ruby for colorls
-        dependencies['dev'] = ["ruby", "ruby-rake", "gcc"]
-        dependencies['zsh_plugins'] = ["zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions"]
+        # Core packages from official repos
+        core_packages = [
+            "zsh", "tmux", "neovim", "curl", "git", "wget",
+            "i3-wm", "i3status", "i3blocks", "i3lock",
+            "picom", "feh", "rofi", "dunst",
+            "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
+            "pipewire", "pipewire-pulse", "wireplumber", "pavucontrol", "alsa-utils",
+            "networkmanager", "network-manager-applet",
+            "bluez", "bluez-utils", "blueman",
+            "discord", "ruby", "ruby-rake", "gcc",
+            "zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions",
+            "ttf-jetbrains-mono-nerd"
+        ]
         
-        # Install packages group by group
-        for group, pkgs in dependencies.items():
-            if group == 'aur':
-                continue  # Handle AUR packages separately
-                
-            to_install = []
-            for pkg in pkgs:
-                result = subprocess.run(["pacman", "-Qq", pkg], 
-                                     capture_output=True, 
-                                     stderr=subprocess.DEVNULL)
-                if result.returncode != 0:
-                    to_install.append(pkg)
+        try:
+            # Update package database first
+            subprocess.run(["sudo", "pacman", "-Sy"], check=True)
             
-            if to_install:
-                print(f"\nInstalling {group} packages: {', '.join(to_install)}")
+            # Install all core packages in one command
+            print("Installing core packages...")
+            subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + core_packages, check=True)
+            
+            # Install AUR packages
+            aur_packages = ["spotify", "slack-desktop"]
+            print("\nInstalling AUR packages...")
+            for pkg in aur_packages:
                 try:
-                    subprocess.run(["sudo", "pacman", "-S", "--noconfirm"] + to_install,
-                                 check=True)
-                except subprocess.CalledProcessError as e:
-                    print(f"Error installing {group} packages:")
-                    print(e.stderr.decode())
-                    print("\nContinuing with remaining packages...")
-                    continue
-        
-        # Install AUR packages using yay
-        if 'aur' in dependencies:
-            for pkg in dependencies['aur']:
-                if subprocess.run(["pacman", "-Qq", pkg], 
-                                capture_output=True,
-                                stderr=subprocess.DEVNULL).returncode != 0:
-                    print(f"\nInstalling AUR package: {pkg}")
-                    try:
-                        subprocess.run(["yay", "-S", "--noconfirm", pkg],
-                                     check=True)
-                    except subprocess.CalledProcessError as e:
-                        print(f"Error installing {pkg}:")
-                        print(e.stderr.decode())
-                        print("\nContinuing with remaining packages...")
-                        continue
-        
-        # Install JetBrains Mono Nerd Font
-        install_jetbrains_font()
-        
-        # Now install the colorls gem with proper permissions
-        print_step("Installing colorls gem")
-        subprocess.check_call(["gem", "install", "colorls", "--user-install"])
+                    subprocess.run(["yay", "-S", "--needed", "--noconfirm", pkg], check=True)
+                except subprocess.CalledProcessError:
+                    print(f"Failed to install AUR package: {pkg}")
+            
+            # Install colorls gem
+            print("\nInstalling colorls gem...")
+            subprocess.run(["gem", "install", "colorls", "--user-install"], check=True)
+            
+        except subprocess.CalledProcessError as e:
+            print(f"Error during installation: {e}")
+            print("Please check the error messages above and try to resolve any conflicts.")
+            
+    elif system in ["ubuntu", "debian"]:
+        print("Ubuntu/Debian support not implemented yet")
+        sys.exit(1)
     elif system in ["macos", "mac"]:
-        print_step("Installing dependencies on macOS using Homebrew")
-        subprocess.check_call(["brew", "update"])
-        subprocess.check_call(["brew", "install"] + dependencies)
+        print("MacOS support not implemented yet")
+        sys.exit(1)
     elif system in ["windows"]:
-        print_step("Installing dependencies on Windows")
-        for pkg in dependencies:
-            subprocess.check_call(["choco", "install", pkg, "-y"])
+        print("Windows support not implemented yet")
+        sys.exit(1)
     else:
-        print("Unknown system type. Please specify one of: ubuntu, arch, macos, or windows.")
+        print("Unknown system type. Please specify one of: ubuntu, arch, macos, or windows")
         sys.exit(1)
 
 def ensure_line_in_file(file_path, line):
