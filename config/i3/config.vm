@@ -76,7 +76,7 @@ bindsym $mod+Shift+e layout toggle split
 bindsym $mod+Shift+space floating toggle
 
 # Toggle focus mode
-bindsym $mod+Shift+Shift+space focus mode_toggle
+bindsym $mod+Shift+space focus mode_toggle
 
 # Focus parent container
 bindsym $mod+Shift+a focus parent
