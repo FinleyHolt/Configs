@@ -28,7 +28,7 @@ def install_oh_my_zsh_theme():
         # Copy the mocha theme file
         subprocess.run(["cp", 
                        f"{catppuccin_dir}/themes/catppuccin_mocha-zsh-syntax-highlighting.zsh",
-                       f"{zsh_dir}/"], check=True)
+                       f"{zsh_dir}/catppuccin_mocha-zsh-syntax-highlighting.zsh"], check=True)
 
     # Install zsh-autosuggestions
     autosuggestions_dir = os.path.expanduser("~/.oh-my-zsh/custom/plugins/zsh-autosuggestions")
@@ -194,9 +194,16 @@ def install_dependencies(system):
             else:
                 print("\nSkipping AUR packages as yay is not available")
             
-            # Install colorls gem
+            # Install colorls gem with proper permissions
             print("\nInstalling colorls gem...")
-            subprocess.run(["gem", "install", "colorls", "--user-install"], check=True)
+            try:
+                subprocess.run(["gem", "install", "colorls", "--user-install"], check=True)
+                # Create bin directory if it doesn't exist
+                os.makedirs(os.path.expanduser("~/.local/share/gem/ruby/3.0.0/bin"), exist_ok=True)
+                print("colorls installed successfully")
+            except subprocess.CalledProcessError:
+                print("Failed to install colorls. You may need to install it manually with:")
+                print("gem install colorls --user-install")
             
         except subprocess.CalledProcessError as e:
             print(f"Error during installation: {e}")
@@ -331,6 +338,16 @@ def create_symlinks(repo_dir):
             shutil.rmtree(i3_dest)
     os.symlink(i3_src, i3_dest)
     print(f"Created symlink: {i3_dest} -> {i3_src}")
+    
+    # Make i3 setup script executable and run it
+    i3_setup_script = os.path.join(i3_dest, "i3-setup.sh")
+    if os.path.exists(i3_setup_script):
+        os.chmod(i3_setup_script, 0o755)
+        try:
+            subprocess.run([i3_setup_script], check=True)
+            print("i3 setup script executed successfully")
+        except subprocess.CalledProcessError:
+            print("Warning: Failed to execute i3 setup script")
 
     # Create symlink for picom config (placed in ~/.config/picom).
     picom_src = os.path.abspath(os.path.join(config_dir, "picom"))
