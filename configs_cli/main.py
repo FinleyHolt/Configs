@@ -64,6 +64,11 @@ def install_oh_my_zsh():
         alternative_url = "https://install.ohmyz.sh"
         
         try:
+            # Ensure wget is installed
+            if not shutil.which("wget"):
+                print("Installing wget...")
+                subprocess.run(["sudo", "pacman", "-S", "--noconfirm", "wget"], check=True)
+
             print_step("Downloading Oh My Zsh installer")
             print("Downloading from:", alternative_url)
             subprocess.run(["wget", "-O", install_script, alternative_url], check=True)
