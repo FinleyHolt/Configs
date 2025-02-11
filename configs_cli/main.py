@@ -145,9 +145,13 @@ def install_dependencies(system):
     if system in ["arch", "archlinux"]:
         print_step("Installing dependencies on Arch Linux")
         
+        # Install zsh first
+        print("Installing zsh...")
+        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "zsh"], check=True)
+        
         # Core packages from official repos
         core_packages = [
-            "zsh", "tmux", "neovim", "curl", "git", "wget", "kitty",
+            "tmux", "neovim", "curl", "git", "wget", "kitty",
             "i3-wm", "i3status", "i3blocks", "i3lock",
             "picom", "feh", "rofi", "dunst",
             "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
