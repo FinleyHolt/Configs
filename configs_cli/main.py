@@ -149,19 +149,33 @@ def install_dependencies(system):
         print("Installing zsh...")
         subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "zsh"], check=True)
         
-        # Core packages from official repos
-        core_packages = [
+        # Base packages for all environments
+        base_packages = [
             "tmux", "neovim", "curl", "git", "wget", "kitty",
-            "i3-wm", "i3status", "i3blocks", "i3lock",
-            "picom", "feh", "rofi", "dunst",
-            "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
             "pipewire", "pipewire-pulse", "wireplumber", "pavucontrol", "alsa-utils",
             "networkmanager", "network-manager-applet",
             "bluez", "bluez-utils", "blueman",
             "discord", "ruby", "ruby-rake", "gcc",
             "zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions",
-            "ttf-jetbrains-mono-nerd", "lightdm", "lightdm-gtk-greeter"
+            "ttf-jetbrains-mono-nerd"
         ]
+
+        # Environment-specific packages
+        de_packages = {
+            "i3": [
+                "i3-wm", "i3status", "i3blocks", "i3lock",
+                "picom", "feh", "rofi", "dunst",
+                "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
+                "lightdm", "lightdm-gtk-greeter"
+            ],
+            "kde": [
+                "plasma-meta", "plasma-wayland-session", "kde-applications",
+                "sddm", "xorg-server", "xorg-xinit"
+            ]
+        }
+
+        # Combine base packages with DE-specific packages
+        core_packages = base_packages + de_packages[args.de]
         
         try:
             # Update package database first
@@ -211,13 +225,19 @@ def install_dependencies(system):
 
             # Reset and start necessary services
             print("\nResetting and starting necessary services...")
+            # Common services
             services = [
                 "NetworkManager",
                 "bluetooth",
                 "pipewire",
-                "pipewire-pulse",
-                "lightdm"
+                "pipewire-pulse"
             ]
+
+            # Add display manager service based on DE choice
+            if args.de == "i3":
+                services.append("lightdm")
+            elif args.de == "kde":
+                services.append("sddm")
             
             for service in services:
                 try:
@@ -328,6 +348,7 @@ def ensure_ruby_gem_bin_in_zshrc(zshrc_path):
         print(f"Skipping local gem PATH update: {e}")
 
 def create_symlinks(repo_dir, args):
+    """Create symlinks for configuration files based on chosen environment"""
     home = os.path.expanduser("~")
     dotfiles_dir = os.path.join(repo_dir, "dotfiles")
     config_dir = os.path.join(repo_dir, "config")
@@ -383,27 +404,27 @@ def create_symlinks(repo_dir, args):
     os.symlink(nvim_src, nvim_dest)
     print(f"Created symlink: {nvim_dest} -> {nvim_src}")
 
-    # Create symlink for i3 config (placed in ~/.config/i3).
-    i3_src = os.path.abspath(os.path.join(config_dir, "i3"))
-    
-    i3_dest = os.path.join(home, ".config", "i3")
-    if os.path.exists(i3_dest) or os.path.islink(i3_dest):
-        if os.path.islink(i3_dest):
-            os.remove(i3_dest)
-        else:
-            shutil.rmtree(i3_dest)
-    os.symlink(i3_src, i3_dest)
-    print(f"Created symlink: {i3_dest} -> {i3_src}")
-    
-    # Make i3 setup script executable
-    i3_setup_script = os.path.join(i3_dest, "i3-setup.sh")
-    if os.path.exists(i3_setup_script):
-        os.chmod(i3_setup_script, 0o755)
-        print("i3 setup script is now executable")
+    # Create DE-specific symlinks and configurations
+    if args.de == "i3":
+        # Create symlink for i3 config
+        i3_src = os.path.abspath(os.path.join(config_dir, "i3"))
+        i3_dest = os.path.join(home, ".config", "i3")
+        if os.path.exists(i3_dest) or os.path.islink(i3_dest):
+            if os.path.islink(i3_dest):
+                os.remove(i3_dest)
+            else:
+                shutil.rmtree(i3_dest)
+        os.symlink(i3_src, i3_dest)
+        print(f"Created symlink: {i3_dest} -> {i3_src}")
         
-        # Create xinitrc if it doesn't exist
-        xinitrc_path = os.path.join(home, ".xinitrc")
-        if not os.path.exists(xinitrc_path):
+        # Make i3 setup script executable
+        i3_setup_script = os.path.join(i3_dest, "i3-setup.sh")
+        if os.path.exists(i3_setup_script):
+            os.chmod(i3_setup_script, 0o755)
+            print("i3 setup script is now executable")
+            
+            # Create xinitrc for i3
+            xinitrc_path = os.path.join(home, ".xinitrc")
             with open(xinitrc_path, "w") as f:
                 f.write("#!/bin/sh\n\n")
                 f.write("# Execute i3 setup script\n")
@@ -412,14 +433,9 @@ def create_symlinks(repo_dir, args):
                 f.write("exec i3\n")
             os.chmod(xinitrc_path, 0o755)
             print("Created .xinitrc with i3 configuration")
-        else:
-            # Ensure the i3 setup script is in xinitrc
-            with open(xinitrc_path, "r") as f:
-                content = f.read()
-            if i3_setup_script not in content:
-                with open(xinitrc_path, "a") as f:
-                    f.write(f"\n# Execute i3 setup script\n{i3_setup_script}\n")
-                print("Added i3 setup script to existing .xinitrc")
+    elif args.de == "kde":
+        # KDE configs are handled by the system, no manual symlinks needed
+        print("Using KDE Plasma - configurations will be managed by the system")
 
     # Create symlink for picom config (placed in ~/.config/picom).
     picom_src = os.path.abspath(os.path.join(config_dir, "picom"))
@@ -571,6 +587,9 @@ def main():
     setup_parser = subparsers.add_parser("setup", help="Install dependencies and create symlinks")
     setup_parser.add_argument("--system", required=True, choices=["ubuntu", "arch", "macos", "windows"],
                               help="Specify your operating system")
+    setup_parser.add_argument("--de", choices=["i3", "kde"],
+                              default="i3",
+                              help="Choose desktop environment (i3 or KDE Plasma)")
     # Use CONFIGS_REPO environment variable if set; otherwise, default to ~/.configs.
     default_repo = os.environ.get("CONFIGS_REPO", os.path.join(os.path.expanduser("~"), ".configs"))
     setup_parser.add_argument("--repo", default=default_repo,
