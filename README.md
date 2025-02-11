@@ -78,14 +78,25 @@ configs-cli source
 
 ## Requirements
 
+### Base Requirements
 - Python 3.6 or higher
 - Git
 - Internet connection for downloading dependencies
 
-### Additional Requirements for KDE Setup
+### Before Running the CLI
+On Arch Linux, install these prerequisites first:
+```bash
+# Install python and git
+sudo pacman -S python python-pip git base-devel
 
+# Install the CLI tool
+git clone <your-repo-url>
+cd configs-cli
+pip install -e .
+```
+
+### Additional Requirements for KDE Setup
 If you plan to use KDE Plasma as your desktop environment (--de kde), ensure these are installed first:
-- SDDM (Simple Desktop Display Manager)
 ```bash
 sudo pacman -S sddm sddm-kcm
 sudo systemctl enable sddm
