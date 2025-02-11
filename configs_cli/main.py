@@ -222,13 +222,22 @@ def install_dependencies(system):
                 except subprocess.CalledProcessError as e:
                     print(f"Warning: Failed to configure {service}: {e}")
 
-            # Reload i3
+            # Only try to reload i3 if it's running
             try:
-                subprocess.run(["i3-msg", "reload"], check=True)
-                subprocess.run(["i3-msg", "restart"], check=True)
-                print("i3 configuration reloaded")
+                # Check if i3 is running by looking for its socket
+                i3_socket = subprocess.run(
+                    ["i3", "--get-socketpath"],
+                    capture_output=True,
+                    text=True
+                )
+                if i3_socket.returncode == 0:
+                    subprocess.run(["i3-msg", "reload"], check=True)
+                    subprocess.run(["i3-msg", "restart"], check=True)
+                    print("i3 configuration reloaded")
+                else:
+                    print("i3 is not currently running - skipping reload")
             except subprocess.CalledProcessError as e:
-                print(f"Warning: Failed to reload i3: {e}")
+                print(f"Note: Could not reload i3 (this is normal if i3 isn't running)")
 
         except subprocess.CalledProcessError as e:
             print(f"Error during installation: {e}")
@@ -364,15 +373,23 @@ def create_symlinks(repo_dir):
     os.symlink(i3_src, i3_dest)
     print(f"Created symlink: {i3_dest} -> {i3_src}")
     
-    # Make i3 setup script executable and run it
+    # Make i3 setup script executable and run it if i3 is running
     i3_setup_script = os.path.join(i3_dest, "i3-setup.sh")
     if os.path.exists(i3_setup_script):
         os.chmod(i3_setup_script, 0o755)
         try:
-            subprocess.run([i3_setup_script], check=True)
-            print("i3 setup script executed successfully")
+            # Check if i3 is running
+            i3_check = subprocess.run(
+                ["pgrep", "i3"],
+                capture_output=True
+            )
+            if i3_check.returncode == 0:
+                subprocess.run([i3_setup_script], check=True)
+                print("i3 setup script executed successfully")
+            else:
+                print("Note: i3 is not running - setup script will run on next login")
         except subprocess.CalledProcessError:
-            print("Warning: Failed to execute i3 setup script")
+            print("Note: i3 setup script will run on next login")
 
     # Create symlink for picom config (placed in ~/.config/picom).
     picom_src = os.path.abspath(os.path.join(config_dir, "picom"))
