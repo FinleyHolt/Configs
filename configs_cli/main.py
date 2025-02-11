@@ -170,6 +170,14 @@ def install_dependencies(system, args):
         zsh_plugins = ["zsh-syntax-highlighting", "zsh-autosuggestions", "zsh-completions"]
         subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + zsh_plugins, check=True)
 
+        # Install zsh-autocomplete
+        autocomplete_dir = os.path.expanduser("~/.zsh/zsh-autocomplete")
+        if not os.path.exists(autocomplete_dir):
+            print("\nInstalling zsh-autocomplete...")
+            subprocess.run(["git", "clone", "--depth", "1",
+                          "https://github.com/marlonrichert/zsh-autocomplete.git",
+                          autocomplete_dir], check=True)
+
         # Environment-specific packages
         de_packages = {
             "i3": [
@@ -262,10 +270,17 @@ def install_dependencies(system, args):
                 sddm_packages = ["sddm", "plasma-sddm", "plasma-desktop", "plasma-wayland-session"]
                 subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + sddm_packages, check=True)
                 
-                # Enable SDDM
-                print("Enabling SDDM service...")
-                subprocess.run(["sudo", "systemctl", "enable", "sddm"], check=True)
-                print("\nSDDM installed and enabled. After reboot, select Plasma (X11) or Plasma (Wayland).")
+                # Configure and enable SDDM
+                print("Configuring and enabling SDDM...")
+                subprocess.run(["sudo", "systemctl", "-f", "enable", "sddm"], check=True)
+                
+                # Create default SDDM configuration
+                subprocess.run(["sudo", "mkdir", "-p", "/etc/sddm.conf.d"], check=True)
+                with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+                    f.write("[Autologin]\nSession=plasma.desktop\n")
+                subprocess.run(["sudo", "mv", f.name, "/etc/sddm.conf.d/kde_settings.conf"], check=True)
+                
+                print("\nSDDM configured and enabled. System will boot into KDE Plasma after restart.")
             
             for service in services:
                 try:
