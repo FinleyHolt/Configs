@@ -139,13 +139,15 @@ def install_jetbrains_font():
         print(f"Error installing JetBrains Mono Nerd Font: {e}")
 
 def install_dependencies(system):
-    dependencies = [
-        "zsh", "tmux", "neovim", "i3", "curl", "git", "wget", "picom",
-        "spotify", "slack-desktop", "discord", "feh", "rofi", "dunst",
-        "xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot",
-        "alsa-utils", "pipewire", "pipewire-pulse", "pavucontrol", "networkmanager",
-        "network-manager-applet", "bluez", "bluez-utils", "blueman"
-    ]
+    dependencies = {
+        'base': ["zsh", "tmux", "neovim", "curl", "git", "wget"],
+        'wm': ["i3-wm", "i3status", "i3blocks", "i3lock", "picom", "feh", "rofi", "dunst"],
+        'xorg': ["xorg-server", "xorg-xinit", "xorg-xrandr", "xorg-xsetroot"],
+        'audio': ["pipewire", "pipewire-pulse", "wireplumber", "pavucontrol", "alsa-utils"],
+        'network': ["networkmanager", "network-manager-applet", "bluez", "bluez-utils", "blueman"],
+        'apps': ["discord"],
+        'aur': ["spotify", "slack-desktop"]
+    }
     system = system.lower()
     
     # Filter out already installed dependencies
@@ -162,39 +164,52 @@ def install_dependencies(system):
         subprocess.check_call(["sudo", "apt-get", "install", "-y"] + dependencies)
     elif system in ["arch", "archlinux"]:
         print_step("Installing dependencies on Arch Linux")
-        # For Arch, add Ruby and required dependencies for colorls
-        arch_dependencies = dependencies + ["ruby", "ruby-rake", "gcc"]
-        # Explicitly install i3-wm and i3status to avoid group selection prompt
-        i3_deps = ["i3-wm", "i3status", "i3blocks", "i3lock"]
-        all_deps = arch_dependencies + i3_deps
-        # Remove i3 from the list since we're installing specific i3 packages
-        all_deps.remove("i3")
-        # Only install packages that aren't already installed
-        to_install = []
-        for pkg in all_deps:
-            result = subprocess.run(["pacman", "-Qq", pkg], capture_output=True)
-            if result.returncode != 0:
-                to_install.append(pkg)
         
-        # Add zsh plugins to the installation
-        for plugin in ["zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions"]:
-            if subprocess.run(["pacman", "-Qq", plugin], 
-                            capture_output=True).returncode != 0:
-                to_install.append(plugin)
+        # Add development tools and Ruby for colorls
+        dependencies['dev'] = ["ruby", "ruby-rake", "gcc"]
+        dependencies['zsh_plugins'] = ["zsh-syntax-highlighting", "zsh-autocomplete", "zsh-autosuggestions"]
         
-        # Separate AUR packages from official repo packages
-        aur_packages = ["spotify", "slack-desktop"]
-        official_packages = [pkg for pkg in to_install if pkg not in aur_packages]
-        
-        if official_packages:
-            print(f"Installing official packages: {', '.join(official_packages)}")
-            subprocess.check_call(["sudo", "pacman", "-S", "--noconfirm"] + official_packages)
+        # Install packages group by group
+        for group, pkgs in dependencies.items():
+            if group == 'aur':
+                continue  # Handle AUR packages separately
+                
+            to_install = []
+            for pkg in pkgs:
+                result = subprocess.run(["pacman", "-Qq", pkg], 
+                                     capture_output=True, 
+                                     stderr=subprocess.DEVNULL)
+                if result.returncode != 0:
+                    to_install.append(pkg)
+            
+            if to_install:
+                print(f"\nInstalling {group} packages: {', '.join(to_install)}")
+                try:
+                    subprocess.run(["sudo", "pacman", "-S", "--noconfirm"] + to_install,
+                                 check=True,
+                                 stderr=subprocess.PIPE)
+                except subprocess.CalledProcessError as e:
+                    print(f"Error installing {group} packages:")
+                    print(e.stderr.decode())
+                    print("\nContinuing with remaining packages...")
+                    continue
         
         # Install AUR packages using yay
-        for pkg in aur_packages:
-            if subprocess.run(["pacman", "-Qq", pkg], capture_output=True).returncode != 0:
-                print(f"Installing AUR package: {pkg}")
-                subprocess.check_call(["yay", "-S", "--noconfirm", pkg])
+        if 'aur' in dependencies:
+            for pkg in dependencies['aur']:
+                if subprocess.run(["pacman", "-Qq", pkg], 
+                                capture_output=True,
+                                stderr=subprocess.DEVNULL).returncode != 0:
+                    print(f"\nInstalling AUR package: {pkg}")
+                    try:
+                        subprocess.run(["yay", "-S", "--noconfirm", pkg],
+                                     check=True,
+                                     stderr=subprocess.PIPE)
+                    except subprocess.CalledProcessError as e:
+                        print(f"Error installing {pkg}:")
+                        print(e.stderr.decode())
+                        print("\nContinuing with remaining packages...")
+                        continue
         
         if not official_packages and not aur_packages:
             print("All required packages are already installed")
