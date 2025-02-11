@@ -138,7 +138,7 @@ def install_jetbrains_font():
     except subprocess.CalledProcessError as e:
         print(f"Error installing JetBrains Mono Nerd Font: {e}")
 
-def install_dependencies(system):
+def install_dependencies(system, args):
     """Install system dependencies based on the operating system."""
     system = system.lower()
     
@@ -655,7 +655,7 @@ Common Mistakes:
                 print(f"Error: repository directory {args.repo} does not exist. "
                       f"Either clone it there or provide --repo-url to auto-clone it.")
                 sys.exit(1)
-        install_dependencies(args.system)
+        install_dependencies(args.system, args)
         if args.system != "windows":
             install_oh_my_zsh()
         create_symlinks(args.repo, args)
