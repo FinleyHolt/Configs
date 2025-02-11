@@ -175,8 +175,9 @@ def install_dependencies(system, args):
                 "lightdm", "lightdm-gtk-greeter"
             ],
             "kde": [
-                "plasma-meta", "plasma-wayland-session", "kde-applications",
-                "sddm", "xorg-server", "xorg-xinit"
+                "plasma", "plasma-wayland-session", "plasma-desktop",
+                "sddm", "xorg-server", "xorg-xinit", "kde-applications-meta",
+                "plasma-pa", "plasma-nm", "dolphin", "konsole"
             ]
         }
 
@@ -239,14 +240,17 @@ def install_dependencies(system, args):
                 "pipewire-pulse"
             ]
 
-            # Add display manager service based on DE choice
+            # Configure and enable display manager based on DE choice
             if args.de == "i3":
-                services.append("lightdm")
-                print("\nAfter reboot, you'll need to log in via LightDM and select i3 as your session.")
+                # Install and configure LightDM
+                subprocess.run(["sudo", "systemctl", "disable", "sddm"], check=True, stderr=subprocess.DEVNULL)
+                subprocess.run(["sudo", "systemctl", "enable", "lightdm"], check=True)
+                print("\nLightDM enabled. After reboot, select i3 as your session.")
             elif args.de == "kde":
-                services.append("sddm")
-                print("\nAfter reboot, SDDM (KDE's display manager) will start automatically.")
-                print("You can select Plasma (X11) or Plasma (Wayland) from the session menu.")
+                # Install and configure SDDM
+                subprocess.run(["sudo", "systemctl", "disable", "lightdm"], check=True, stderr=subprocess.DEVNULL)
+                subprocess.run(["sudo", "systemctl", "enable", "sddm"], check=True)
+                print("\nSDDM enabled. After reboot, select Plasma (X11) or Plasma (Wayland).")
             
             for service in services:
                 try:
