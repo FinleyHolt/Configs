@@ -276,6 +276,21 @@ def ensure_local_bin_in_zshrc(zshrc_path):
     local_bin_line = 'export PATH="$HOME/.local/bin:$PATH"'
     ensure_line_in_file(zshrc_path, local_bin_line)
 
+def clean_zshrc(zshrc_path):
+    """Remove unwanted entries from zshrc"""
+    try:
+        with open(zshrc_path, "r") as f:
+            lines = f.readlines()
+        
+        # Filter out conda references and other unwanted lines
+        cleaned_lines = [line for line in lines if "conda" not in line]
+        
+        with open(zshrc_path, "w") as f:
+            f.writelines(cleaned_lines)
+        print("Cleaned up .zshrc file")
+    except Exception as e:
+        print(f"Error cleaning .zshrc: {e}")
+
 def ensure_ruby_gem_bin_in_zshrc(zshrc_path):
     """
     Detects the Ruby gem bin directories and ensures they are added to the PATH
@@ -325,9 +340,10 @@ def create_symlinks(repo_dir):
     os.symlink(zshrc_src, zshrc_dest)
     print(f"Created symlink: {zshrc_dest} -> {zshrc_src}")
     
-    # Update the source dotfile to include PATH updates.
+    # Update and clean the source dotfile
     ensure_local_bin_in_zshrc(zshrc_src)
     ensure_ruby_gem_bin_in_zshrc(zshrc_src)
+    clean_zshrc(zshrc_src)
     
     # Create symlink for .tmux.conf.
     tmux_src = os.path.abspath(os.path.join(dotfiles_dir, "tmux.conf"))
@@ -373,23 +389,31 @@ def create_symlinks(repo_dir):
     os.symlink(i3_src, i3_dest)
     print(f"Created symlink: {i3_dest} -> {i3_src}")
     
-    # Make i3 setup script executable and run it if i3 is running
+    # Make i3 setup script executable
     i3_setup_script = os.path.join(i3_dest, "i3-setup.sh")
     if os.path.exists(i3_setup_script):
         os.chmod(i3_setup_script, 0o755)
-        try:
-            # Check if i3 is running
-            i3_check = subprocess.run(
-                ["pgrep", "i3"],
-                capture_output=True
-            )
-            if i3_check.returncode == 0:
-                subprocess.run([i3_setup_script], check=True)
-                print("i3 setup script executed successfully")
-            else:
-                print("Note: i3 is not running - setup script will run on next login")
-        except subprocess.CalledProcessError:
-            print("Note: i3 setup script will run on next login")
+        print("i3 setup script is now executable")
+        
+        # Create xinitrc if it doesn't exist
+        xinitrc_path = os.path.join(home, ".xinitrc")
+        if not os.path.exists(xinitrc_path):
+            with open(xinitrc_path, "w") as f:
+                f.write("#!/bin/sh\n\n")
+                f.write("# Execute i3 setup script\n")
+                f.write(f"{i3_setup_script}\n\n")
+                f.write("# Start i3\n")
+                f.write("exec i3\n")
+            os.chmod(xinitrc_path, 0o755)
+            print("Created .xinitrc with i3 configuration")
+        else:
+            # Ensure the i3 setup script is in xinitrc
+            with open(xinitrc_path, "r") as f:
+                content = f.read()
+            if i3_setup_script not in content:
+                with open(xinitrc_path, "a") as f:
+                    f.write(f"\n# Execute i3 setup script\n{i3_setup_script}\n")
+                print("Added i3 setup script to existing .xinitrc")
 
     # Create symlink for picom config (placed in ~/.config/picom).
     picom_src = os.path.abspath(os.path.join(config_dir, "picom"))
