@@ -74,25 +74,25 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # Split orientation
-bindsym $mod+h split h
-bindsym $mod+v split v
+bindsym $mod+Shift+h split h
+bindsym $mod+Shift+v split v
 
 # Toggle fullscreen mode
-bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+f fullscreen toggle
 
 # Change container layout
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+bindsym $mod+Shift+s layout stacking
+bindsym $mod+Shift+w layout tabbed
+bindsym $mod+Shift+e layout toggle split
 
 # Toggle tiling/floating
 bindsym $mod+Shift+space floating toggle
 
 # Toggle focus mode (tiling / floating)
-bindsym $mod+space focus mode_toggle
+bindsym $mod+Shift+Tab focus mode_toggle
 
 # Focus parent container
-bindsym $mod+a focus parent
+bindsym $mod+Shift+a focus parent
 
 # Define default workspaces
 set $ws1 "1: Terminal"
@@ -137,7 +137,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # Exit i3 (logs out of X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+x exec "i3-nagbar -t warning -m 'Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 
 # Resize mode
 mode "resize" {
@@ -156,7 +156,7 @@ mode "resize" {
     bindsym $mod+r mode "default"
 }
 
-bindsym $mod+r mode "resize"
+bindsym $mod+Shift+r mode "resize"
 
 # i3bar configuration
 bar {
