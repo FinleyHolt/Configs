@@ -186,8 +186,7 @@ def install_dependencies(system):
                 print(f"\nInstalling {group} packages: {', '.join(to_install)}")
                 try:
                     subprocess.run(["sudo", "pacman", "-S", "--noconfirm"] + to_install,
-                                 check=True,
-                                 stderr=subprocess.PIPE)
+                                 check=True)
                 except subprocess.CalledProcessError as e:
                     print(f"Error installing {group} packages:")
                     print(e.stderr.decode())
@@ -203,8 +202,7 @@ def install_dependencies(system):
                     print(f"\nInstalling AUR package: {pkg}")
                     try:
                         subprocess.run(["yay", "-S", "--noconfirm", pkg],
-                                     check=True,
-                                     stderr=subprocess.PIPE)
+                                     check=True)
                     except subprocess.CalledProcessError as e:
                         print(f"Error installing {pkg}:")
                         print(e.stderr.decode())
