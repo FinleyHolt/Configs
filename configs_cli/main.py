@@ -188,7 +188,7 @@ def install_dependencies(system, args):
             ],
             "kde": [
                 "plasma", "plasma-wayland-session", "plasma-desktop",
-                "plasma-sddm", "sddm", "xorg-server", "xorg-xinit", "kde-applications-meta",
+                "sddm", "sddm-kcm", "plasma-sddm", "xorg-server", "xorg-xinit", "kde-applications-meta",
                 "plasma-pa", "plasma-nm", "dolphin", "konsole"
             ]
         }
@@ -270,8 +270,9 @@ def install_dependencies(system, args):
                 sddm_packages = ["sddm", "plasma-sddm", "plasma-desktop", "plasma-wayland-session"]
                 subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm"] + sddm_packages, check=True)
                 
-                # Configure and enable SDDM
-                print("Configuring and enabling SDDM...")
+                # Install and configure SDDM first
+                print("Installing and configuring SDDM...")
+                subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "sddm", "sddm-kcm"], check=True)
                 subprocess.run(["sudo", "systemctl", "-f", "enable", "sddm"], check=True)
                 
                 # Create default SDDM configuration
